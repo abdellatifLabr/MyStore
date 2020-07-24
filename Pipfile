@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 django = "*"
 python-decouple = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.7"
