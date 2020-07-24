@@ -1,5 +1,6 @@
 import os
 from decouple import config
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +29,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'graphene_django',
+    'graphql_auth',
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    'django_filters',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -129,5 +134,39 @@ EMAIL_USE_SSL = False
 
 # GRAPHENE
 GRAPHENE = {
-    'SCHEMA': 'mystore.schema.schema'
+    'SCHEMA': 'mystore.schema.schema',
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+}
+
+# Graphql Auth
+GRAPHQL_AUTH = {
+    'REGISTER_MUTATION_FIELDS': ['username', 'email', 'first_name', 'last_name'],
+    'ALLOW_LOGIN_NOT_VERIFIED': True,
+}
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_auth.backends.GraphQLAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# Graphql JWT
+GRAPHQL_JWT = {
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    'JWT_EXPIRATION_DELTA': timedelta(minutes=30),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(hours=1),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+    'JWT_ALLOW_ANY_CLASSES': [
+        'graphql_auth.mutations.Register',
+        'graphql_auth.mutations.VerifyAccount',
+        'graphql_auth.mutations.ResendActivationEmail',
+        'graphql_auth.mutations.SendPasswordResetEmail',
+        'graphql_auth.mutations.PasswordReset',
+        'graphql_auth.mutations.ObtainJSONWebToken',
+        'graphql_auth.mutations.VerifyToken',
+        'graphql_auth.mutations.RefreshToken',
+        'graphql_auth.mutations.RevokeToken',
+    ],
 }

@@ -11,6 +11,7 @@ python-decouple = "*"
 psycopg2 = "*"
 django-cors-headers = "*"
 graphene-django = "*"
+django-graphql-auth = "*"
 
 [requires]
 python_version = "3.7"
