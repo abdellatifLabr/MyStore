@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
     'django_filters',
     'accounts',
+    'phone_field',
+    'profiles',
 ]
 
 MIDDLEWARE = [

@@ -12,6 +12,9 @@ psycopg2 = "*"
 django-cors-headers = "*"
 graphene-django = "*"
 django-graphql-auth = "*"
+django-phone-field = "*"
+pillow = "*"
+graphene-file-upload = "*"
 
 [requires]
 python_version = "3.7"
