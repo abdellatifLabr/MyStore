@@ -13,7 +13,7 @@ class StoreNode(DjangoObjectType):
     
     class Meta:
         model = Store
-        filter_fields = ('id',)
+        filter_fields = ('id', 'user')
         interfaces = (graphene.relay.Node,)
     
 class VisitNode(DjangoObjectType):
@@ -21,7 +21,7 @@ class VisitNode(DjangoObjectType):
     
     class Meta:
         model = Visit
-        filter_fields = ('id',)
+        filter_fields = ('id', 'user')
         interfaces = (graphene.relay.Node,)
 
 class SubscriptionNode(DjangoObjectType):
@@ -29,7 +29,7 @@ class SubscriptionNode(DjangoObjectType):
     
     class Meta:
         model = Subscription
-        filter_fields = ('id',)
+        filter_fields = ('id', 'user')
         interfaces = (graphene.relay.Node,)
 
 class RecruitmentRequestNode(DjangoObjectType):
@@ -37,7 +37,7 @@ class RecruitmentRequestNode(DjangoObjectType):
     
     class Meta:
         model = RecruitmentRequest
-        filter_fields = ('id',)
+        filter_fields = ('id', 'user')
         interfaces = (graphene.relay.Node,)
 
 class ProductNode(DjangoObjectType):
@@ -65,5 +65,5 @@ class CartNode(DjangoObjectType):
 
     class Meta:
         model = Cart
-        filter_fields = ('id',)
+        filter_fields = ('id', 'user')
         interfaces = (graphene.relay.Node,)
