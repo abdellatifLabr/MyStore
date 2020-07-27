@@ -2,16 +2,19 @@ import graphene
 
 import accounts.schema
 import profiles.schema
+import shopping.schema
 
 class Query(
     accounts.schema.Query,
     profiles.schema.Query,
+    shopping.schema.Query,
     graphene.ObjectType
 ): pass
 
 class Mutation(
     accounts.schema.Mutation,
     profiles.schema.Mutation,
+    shopping.schema.Mutation,
     graphene.ObjectType
 ): pass
 
