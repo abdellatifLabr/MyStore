@@ -77,7 +77,7 @@ class UpdateStoreMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return UpdateStoreMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         update_store_form = UpdateStoreForm(kwargs, instance=store)
 
@@ -96,8 +96,9 @@ class DeleteStoreMutation(graphene.relay.ClientIDMutation):
     @login_required
     def mutate_and_get_payload(self, info, id=None, **kwargs):
         store = Store.objects.get(pk=id)
+
         if not store.user == info.context.user:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return DeleteStoreMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         store.delete()
         return DeleteStoreMutation(success=True)
@@ -154,7 +155,7 @@ class CreateRecruitmentRequestMutation(graphene.relay.ClientIDMutation):
         store = Store.objects.get(pk=kwargs.get('store_id'))
 
         if not store.user == info.context.user:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return CreateRecruitmentRequestMutation(success=False, errors=[Messages.NO_PERMISSION])
         
         recruitment_request = RecruitmentRequest.objects.create(**kwargs)
         return CreateRecruitmentRequestMutation(recruitment_request=recruitment_request, success=True)
@@ -175,7 +176,7 @@ class UpdateRecruitmentRequestMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return UpdateRecruitmentRequestMutation(success=False, errors=[Messages.NO_PERMISSION])
         
         if accepted:
             recruitment_request.accepted = True
@@ -197,7 +198,7 @@ class DeleteRecruitmentRequestMutation(graphene.relay.ClientIDMutation):
         recruitment_request = RecruitmentRequest.objects.get(pk=id)
 
         if not recruitment_request.store.user == info.context.user:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return DeleteRecruitmentRequestMutation(success=False, errors=[Messages.NO_PERMISSION])
         
         recruitment_request.delete()
         return DeleteRecruitmentRequestMutation(success=True)
@@ -223,7 +224,7 @@ class CreateProductMutation(graphene.relay.ClientIDMutation):
         has_permission = is_worker or is_owner
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return CreateProductMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         product = Product(store=store)
         product_form = ProductForm(kwargs, instance=product)
@@ -254,7 +255,7 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner or is_worker
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return UpdateProductMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         update_product_form = UpdateProductForm(kwargs, instance=product)
 
@@ -280,7 +281,7 @@ class DeleteProductMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner or is_worker
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return DeleteProductMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         product.delete()
         return DeleteProductMutation(success=True)
@@ -305,7 +306,7 @@ class CreatePriceMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner or is_worker
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return CreatePriceMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         price = Price()
         price_form = PriceForm(kwargs, instance=price)
@@ -335,7 +336,7 @@ class UpdatePriceMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner or is_worker
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return UpdatePriceMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         update_price_form = UpdatePriceForm(kwargs, instance=price)
 
@@ -361,7 +362,7 @@ class DeletePriceMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner or is_worker
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return DeletePriceMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         price.delete()
         return DeletePriceMutation(success=True)

@@ -2,6 +2,7 @@ import graphene
 from graphql_jwt.decorators import login_required
 from graphql_auth.types import ExpectedErrorType
 
+from core.constants import Messages
 from ..models import Order, OrderItem, Address, DiscountCode
 from shopping.models import Store, Product
 from ..forms import AddressForm, UpdateAddressForm, DiscountCodeForm, UpdateDiscountCodeForm
@@ -49,7 +50,7 @@ class UpdateAddressMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return UpdateAddressMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         update_address_form = UpdateAddressForm(kwargs, instance=address)
 
@@ -74,7 +75,7 @@ class DeleteAddressMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return DeleteAddressMutation(success=False, errors=[Messages.NO_PERMISSION])
             
         address.delete()
         return DeleteAddressMutation(success=False)
@@ -131,7 +132,7 @@ class UpdateDiscountCodeMutation(graphene.relay.ClientIDMutation):
         has_permission = (is_owner or is_worker) and not discount_code.expired
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return UpdateDiscountCodeMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         update_discount_code_form = UpdateDiscountCodeForm(kwargs, instance=discount_code)
 
@@ -157,7 +158,7 @@ class DeleteDiscountCodeMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return DeleteDiscountCodeMutation(success=False, errors=[Messages.NO_PERMISSION])
             
         discount_code.delete()
         return DeleteDiscountCodeMutation(success=False)
@@ -209,7 +210,7 @@ class UpdateOrderMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return UpdateOrderMutation(success=False, errors=[Messages.NO_PERMISSION])
             
         for field, value in kwargs.items():
             setattr(order, field, value)
@@ -230,7 +231,7 @@ class DeleteOrderMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner and not order.done
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return DeleteOrderMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         order.delete()
         return DeleteOrderMutation(success=True)
@@ -254,7 +255,7 @@ class CreateOrderItemMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner and not order.done
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return CreateOrderItemMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         order_item = OrderItem.objects.create(order=order, product=product, quantity=quantity)
         return CreateOrderMutation(order_item=order_item, success=True)
@@ -274,7 +275,7 @@ class UpdateOrderItemMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner and not order_item.order.done
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return UpdateOrderItemMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         for field, value in kwargs.items():
             setattr(order_item, field, value)
@@ -295,7 +296,7 @@ class DeleteOrderItemMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner and not order_item.order.done
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return DeleteOrderItemMutation(success=False, errors=[Messages.NO_PERMISSION])
 
         order_item.delete()
         return DeleteOrderItemMutation(success=True)
