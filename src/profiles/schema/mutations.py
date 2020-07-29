@@ -22,8 +22,8 @@ class UpdateProfileMutation(graphene.relay.ClientIDMutation):
         profile = Profile.objects.get(user=info.context.user)
         profile_form = ProfileForm(kwargs, instance=profile)
 
-        if profile_form.is_valid():
-            profile_form.save()
-            return UpdateProfileMutation(profile=profile, success=True)
-        
-        return UpdateProfileMutation(profile=None, success=False, errors=profile_form.errors.get_json_data())
+        if not profile_form.is_valid():
+            return UpdateProfileMutation(success=False, errors=profile_form.errors.get_json_data())
+
+        profile_form.save()
+        return UpdateProfileMutation(profile=profile, success=True)
