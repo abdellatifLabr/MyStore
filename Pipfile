@@ -17,6 +17,7 @@ pillow = "*"
 graphene-file-upload = "*"
 django-money = "*"
 django-countries = "*"
+channels = "*"
 
 [requires]
 python_version = "3.7"

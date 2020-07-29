@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'shopping',
     'order',
     'django_countries',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mystore.wsgi.application'
+
+ASGI_APPLICATION = 'mystore.routing.application'
 
 
 # Database
