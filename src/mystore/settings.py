@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'phone_field',
     'profiles',
     'shopping',
+    'order',
+    'django_countries',
 ]
 
 MIDDLEWARE = [

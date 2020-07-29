@@ -16,6 +16,7 @@ django-phone-field = "*"
 pillow = "*"
 graphene-file-upload = "*"
 django-money = "*"
+django-countries = "*"
 
 [requires]
 python_version = "3.7"
