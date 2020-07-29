@@ -20,10 +20,10 @@ class UpdateProfileMutation(graphene.relay.ClientIDMutation):
     @login_required
     def mutate_and_get_payload(self, info, **kwargs):
         profile = Profile.objects.get(user=info.context.user)
-        profileForm = ProfileForm(kwargs, instance=profile)
+        profile_form = ProfileForm(kwargs, instance=profile)
 
-        if profileForm.is_valid():
-            profileForm.save()
+        if profile_form.is_valid():
+            profile_form.save()
             return UpdateProfileMutation(profile=profile, success=True)
         
-        return UpdateProfileMutation(profile=None, success=False, errors=profileForm.errors.get_json_data())
+        return UpdateProfileMutation(profile=None, success=False, errors=profile_form.errors.get_json_data())

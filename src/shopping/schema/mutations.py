@@ -47,13 +47,13 @@ class CreateStoreMutation(graphene.relay.ClientIDMutation):
     @login_required
     def mutate_and_get_payload(self, info, **kwargs):
         store = Store(user=info.context.user)
-        storeForm = StoreForm(kwargs, instance=store)
+        store_form = StoreForm(kwargs, instance=store)
 
-        if storeForm.is_valid():
-            storeForm.save()
+        if store_form.is_valid():
+            store_form.save()
             return CreateStoreMutation(store=store, success=True)
         
-        return CreateStoreMutation(store=None, success=False, errors=storeForm.errors.get_json_data())
+        return CreateStoreMutation(store=None, success=False, errors=store_form.errors.get_json_data())
 
 class UpdateStoreMutation(graphene.relay.ClientIDMutation):
     class Input:
@@ -79,12 +79,12 @@ class UpdateStoreMutation(graphene.relay.ClientIDMutation):
         if not has_permission:
             raise PermissionError('You don\'t have the permission to perform this action')
 
-        updateStoreForm = UpdateStoreForm(kwargs, instance=store)
+        update_store_form = UpdateStoreForm(kwargs, instance=store)
 
-        if not updateStoreForm.is_valid():
-            return UpdateStoreMutation(success=False, errors=updateStoreForm.errors.get_json_data())
+        if not update_store_form.is_valid():
+            return UpdateStoreMutation(success=False, errors=update_store_form.errors.get_json_data())
 
-        updateStoreForm.save()
+        update_store_form.save()
         return UpdateStoreMutation(store=store, success=True)
         
 class DeleteStoreMutation(graphene.relay.ClientIDMutation):
@@ -226,13 +226,13 @@ class CreateProductMutation(graphene.relay.ClientIDMutation):
             raise PermissionError('You don\'t have the permission to perform this action')
 
         product = Product(store=store)
-        productForm = ProductForm(kwargs, instance=product)
+        product_form = ProductForm(kwargs, instance=product)
 
-        if productForm.is_valid():
-            productForm.save()
+        if product_form.is_valid():
+            product_form.save()
             return CreateProductMutation(product=product, success=True)
         
-        return CreateProductMutation(product=None, success=False, errors=productForm.errors.get_json_data())
+        return CreateProductMutation(product=None, success=False, errors=product_form.errors.get_json_data())
 
 class UpdateProductMutation(graphene.relay.ClientIDMutation):
     class Input:
@@ -256,12 +256,12 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
         if not has_permission:
             raise PermissionError('You don\'t have the permission to perform this action')
 
-        updateProductForm = UpdateProductForm(kwargs, instance=product)
+        update_product_form = UpdateProductForm(kwargs, instance=product)
 
-        if not updateProductForm.is_valid():
-            return UpdateProductMutation(success=False, errors=updateProductForm.errors.get_json_data())
+        if not update_product_form.is_valid():
+            return UpdateProductMutation(success=False, errors=update_product_form.errors.get_json_data())
         
-        product = updateProductForm.save(commit=False)
+        product = update_product_form.save(commit=False)
         product.save(update_fields=list(kwargs.keys()))
         return UpdateProductMutation(product=product, success=True)
         
@@ -308,12 +308,12 @@ class CreatePriceMutation(graphene.relay.ClientIDMutation):
             raise PermissionError('You don\'t have the permission to perform this action')
 
         price = Price()
-        priceForm = PriceForm(kwargs, instance=price)
+        price_form = PriceForm(kwargs, instance=price)
 
-        if not priceForm.is_valid():
-            return CreatePriceMutation(success=False, errors=priceForm.errors.get_json_data())
+        if not price_form.is_valid():
+            return CreatePriceMutation(success=False, errors=price_form.errors.get_json_data())
 
-        priceForm.save()
+        price_form.save()
         return CreatePriceMutation(price=price, success=True)      
 
 class UpdatePriceMutation(graphene.relay.ClientIDMutation):
@@ -337,12 +337,12 @@ class UpdatePriceMutation(graphene.relay.ClientIDMutation):
         if not has_permission:
             raise PermissionError('You don\'t have the permission to perform this action')
 
-        updatePriceForm = UpdatePriceForm(kwargs, instance=price)
+        update_price_form = UpdatePriceForm(kwargs, instance=price)
 
-        if updatePriceForm.is_valid():
-            return UpdatePriceMutation(success=False, errors=updatePriceForm.errors.get_json_data())
+        if update_price_form.is_valid():
+            return UpdatePriceMutation(success=False, errors=update_price_form.errors.get_json_data())
             
-        price = updatePriceForm.save(commit=False)
+        price = update_price_form.save(commit=False)
         price.save(update_fields=list(kwargs.keys()))
         return UpdatePriceMutation(price=price, success=True)     
 
