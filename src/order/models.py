@@ -47,9 +47,15 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f'Order ({self.user})'
+
 class OrderItem(models.Model):
     quantity = models.IntegerField(default=1)
     product = models.OneToOneField(Product, related_name='orders', on_delete=models.CASCADE)
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.product} ({self.quantity})'
