@@ -26,7 +26,7 @@ class Visit(models.Model):
 
 class Subscription(models.Model):
     user = models.ForeignKey(get_user_model(), related_name='subscriptions', on_delete=models.CASCADE)
-    store = models.ForeignKey(Store, related_name='subscriptions', on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, related_name='subscribers', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
