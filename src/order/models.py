@@ -3,7 +3,6 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django_countries.fields import CountryField
-from django.template.defaultfilters import timeuntil
 
 from shopping.models import Product, Store
 
@@ -30,10 +29,6 @@ class DiscountCode(models.Model):
     @property
     def expired(self):
         return self.expiry < datetime.now()
-    
-    @property
-    def expiry(self):
-        return timeuntil(self.expiry)
 
     def __str__(self):
         return self.code
