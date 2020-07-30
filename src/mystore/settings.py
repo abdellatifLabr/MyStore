@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'order',
     'django_countries',
     'channels',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +75,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mystore.wsgi.application'
 
 ASGI_APPLICATION = 'mystore.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [
+                (config('REDIS_HOST'), config('REDIS_PORT', cast=int)),
+            ],
+        },
+    },
+}
 
 
 # Database

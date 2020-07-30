@@ -18,6 +18,7 @@ graphene-file-upload = "*"
 django-money = "*"
 django-countries = "*"
 channels = "*"
+channels-redis = "*"
 
 [requires]
 python_version = "3.7"
