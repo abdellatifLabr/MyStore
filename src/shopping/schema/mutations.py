@@ -126,7 +126,9 @@ class CreateSubscriptionMutation(graphene.relay.ClientIDMutation):
 
     @login_required
     def mutate_and_get_payload(self, info, store_id=None, **kwargs):
-        sub = Subscription.objects.create(user=info.context.user, store_id=store_id)
+        store = Store.objects.get(pk=store_id)
+        sub = Subscription.objects.create(user=info.context.user, store=store)
+        # notifiy the store owner
         return CreateSubscriptionMutation(subscription=sub, success=True)
 
 class DeleteSubscriptionMutation(graphene.relay.ClientIDMutation):
@@ -229,11 +231,12 @@ class CreateProductMutation(graphene.relay.ClientIDMutation):
         product = Product(store=store)
         product_form = ProductForm(kwargs, instance=product)
 
-        if product_form.is_valid():
-            product_form.save()
-            return CreateProductMutation(product=product, success=True)
+        if not product_form.is_valid():
+            return CreateProductMutation(product=None, success=False, errors=product_form.errors.get_json_data())
         
-        return CreateProductMutation(product=None, success=False, errors=product_form.errors.get_json_data())
+        product_form.save()
+        return CreateProductMutation(product=product, success=True)
+        
 
 class UpdateProductMutation(graphene.relay.ClientIDMutation):
     class Input:
