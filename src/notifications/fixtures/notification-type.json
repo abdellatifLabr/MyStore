@@ -1,0 +1,42 @@
+[
+  {
+    "model": "notifications.notificationtype",
+    "pk": 1,
+    "fields": {
+      "name": "SUBSCRIPTION",
+      "action": "subscribed to your store"
+    }
+  }, 
+  {
+    "model": "notifications.notificationtype",
+    "pk": 2,
+    "fields": {
+      "name": "PRODUCT_RELEASE",
+      "action": "released a new product"
+    }
+  }, 
+  {
+    "model": "notifications.notificationtype",
+    "pk": 3,
+    "fields": {
+      "name": "REQRUITMENT_REQUEST",
+      "action": "requested to recruit you as a worker"
+    }
+  }, 
+  {
+    "model": "notifications.notificationtype",
+    "pk": 4,
+    "fields": {
+      "name": "REQRUITMENT_ACCEPT",
+      "action": "accepted your recruitment request"
+    }
+  }, 
+  {
+    "model": "notifications.notificationtype",
+    "pk": 5,
+    "fields": {
+      "name": "REQRUITMENT_DECLINE",
+      "action": "declined your recruitment request"
+    }
+  }
+]
