@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_countries',
     'channels',
     'notifications',
+    'imagekit',
 ]
 
 MIDDLEWARE = [

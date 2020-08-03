@@ -19,6 +19,7 @@ django-money = "*"
 django-countries = "*"
 channels = "*"
 channels-redis = "*"
+django-imagekit = "*"
 
 [requires]
 python_version = "3.7"
