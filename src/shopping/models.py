@@ -4,11 +4,11 @@ from djmoney.models.fields import MoneyField
 from imagekit.models import ProcessedImageField, ImageSpecField
 from imagekit.processors import ResizeToFill
 
-from .utils import build_store_cover_path, build_store_logo_path
+from .utils import build_store_cover_path, build_store_logo_path, build_product_picture_path
 
-class StoreLogo(models.model):
+class StoreLogo(models.Model):
     original = ProcessedImageField(
-                    upload_to=build_sotre_logo_path,
+                    upload_to=build_store_logo_path,
                     processors=[
                         ResizeToFill(180, 180)
                     ],
@@ -38,7 +38,7 @@ class StoreLogo(models.model):
 
 class StoreCover(models.Model):
     original = ProcessedImageField(
-                    upload_to=build_sotre_logo_path,
+                    upload_to=build_store_logo_path,
                     processors=[
                         ResizeToFill(820, 312)
                     ],
