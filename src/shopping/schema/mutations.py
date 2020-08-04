@@ -5,6 +5,8 @@ from graphene_file_upload.scalars import Upload
 
 from ..models import (
     Store,
+    StoreLogo,
+    StoreCover,
     Visit,
     Subscription,
     RecruitmentRequest,
@@ -45,15 +47,21 @@ class CreateStoreMutation(graphene.relay.ClientIDMutation):
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, **kwargs):
+    def mutate_and_get_payload(self, info, logo=None, cover=None, **kwargs):
         store = Store(user=info.context.user)
         store_form = StoreForm(kwargs, instance=store)
 
-        if store_form.is_valid():
-            store_form.save()
-            return CreateStoreMutation(store=store, success=True)
+        if not store_form.is_valid():
+            return CreateStoreMutation(store=None, success=False, errors=store_form.errors.get_json_data())
+
+        if logo is not None:
+            store.logo = StoreLogo.objects.create(original=logo)
         
-        return CreateStoreMutation(store=None, success=False, errors=store_form.errors.get_json_data())
+        if cover is not None:
+            store.cover = StoreCover.objects.create(original=cover)
+
+        store_form.save()
+        return CreateStoreMutation(store=store, success=True)    
 
 class UpdateStoreMutation(graphene.relay.ClientIDMutation):
     class Input:
@@ -70,7 +78,7 @@ class UpdateStoreMutation(graphene.relay.ClientIDMutation):
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, id=None, **kwargs):
+    def mutate_and_get_payload(self, info, id=None, logo=None, cover=None **kwargs):
         store = Store.objects.get(pk=id)
 
         is_owner = store.user == info.context.user
@@ -84,7 +92,20 @@ class UpdateStoreMutation(graphene.relay.ClientIDMutation):
         if not update_store_form.is_valid():
             return UpdateStoreMutation(success=False, errors=update_store_form.errors.get_json_data())
 
-        update_store_form.save()
+        if logo is not None:
+            if store.logo is None:
+                store.logo = StoreLogo.objects.create(original=logo)
+            else:
+                store.logo.original = logo
+        
+        if cover is not None:
+            if store.cover is None:
+                store.cover = StoreCover.objects.create(original=cover)
+            else:
+                store.cover.original = cover
+
+        store = update_store_form.save(commit=False)
+        store.save()
         return UpdateStoreMutation(store=store, success=True)
         
 class DeleteStoreMutation(graphene.relay.ClientIDMutation):
@@ -236,7 +257,6 @@ class CreateProductMutation(graphene.relay.ClientIDMutation):
         
         product_form.save()
         return CreateProductMutation(product=product, success=True)
-        
 
 class UpdateProductMutation(graphene.relay.ClientIDMutation):
     class Input:

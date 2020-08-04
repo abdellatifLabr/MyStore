@@ -1,12 +1,62 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from djmoney.models.fields import MoneyField
+from imagekit.models import ProcessedImageField, ImageSpecField
+from imagekit.processors import ResizeToFill
+
+from .utils import build_store_cover_path, build_store_logo_path
+
+class StoreLogo(models.model):
+    original = ProcessedImageField(
+                    upload_to=build_sotre_logo_path,
+                    processors=[
+                        ResizeToFill(180, 180)
+                    ],
+                    format='JPEG'
+                )
+
+    desktop = ImageSpecField(
+                    source='original',
+                    processors=[
+                        ResizeToFill(170, 170)
+                    ]
+                )
+
+    mobile = ImageSpecField(
+                    source='original',
+                    processors=[
+                        ResizeToFill(128, 128)
+                    ]
+                )
+
+    thumbnail = ImageSpecField(
+                    source='original', 
+                    processors=[
+                        ResizeToFill(32, 32)
+                    ]
+                )
+
+class StoreCover(models.Model):
+    original = ProcessedImageField(
+                    upload_to=build_sotre_logo_path,
+                    processors=[
+                        ResizeToFill(820, 312)
+                    ],
+                    format='JPEG'
+                )
+
+    mobile = ImageSpecField(
+                    source='original',
+                    processors=[
+                        ResizeToFill(640, 360)
+                    ]
+                )
 
 class Store(models.Model):
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=255)
-    logo = models.ImageField(upload_to='store-logos')
-    cover = models.ImageField(upload_to='store-covers')
+    logo = models.OneToOneField(StoreLogo, on_delete=models.CASCADE, null=True)
+    cover = models.OneToOneField(StoreCover, on_delete=models.CASCADE, null=True)
     closed = models.BooleanField(default=False)
     workers = models.ManyToManyField(get_user_model(), related_name='working_at_stores', blank=True)
     user = models.ForeignKey(get_user_model(), related_name='owned_stores', on_delete=models.CASCADE)

@@ -1,7 +1,17 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 
-from ..models import Store, Visit, Subscription, RecruitmentRequest, Product, Price, Cart
+from ..models import (
+    Store, 
+    StoreLogo,
+    StoreCover,
+    Visit, 
+    Subscription, 
+    RecruitmentRequest, 
+    Product, 
+    Price, 
+    Cart,
+)
 from graphql_auth.schema import UserNode
 
 class StoreNode(DjangoObjectType):
@@ -15,6 +25,38 @@ class StoreNode(DjangoObjectType):
         model = Store
         filter_fields = ('id', 'user')
         interfaces = (graphene.relay.Node,)
+
+class StoreLogoNode(DjangoObjectType):
+    thumbnail = graphene.String()
+    desktop = graphene.String()
+    mobile = graphene.String()
+
+    class Meta:
+        model = StoreLogo
+    
+    def resolve_original(self, info, **kwargs):
+        return info.context.build_absolute_uri(self.original.url)
+
+    def resolve_thumbnail(self, info, **kwargs):
+        return info.context.build_absolute_uri(self.thumbnail.url)
+    
+    def resolve_desktop(self, info, **kwargs):
+        return info.context.build_absolute_uri(self.desktop.url)
+    
+    def resolve_mobile(self, info, **kwargs):
+        return info.context.build_absolute_uri(self.mobile.url)
+
+class StoreCoverNode(DjangoObjectType):
+    mobile = graphene.String()
+
+    class Meta:
+        model = StoreCover
+    
+    def resolve_original(self, info, **kwargs):
+        return info.context.build_absolute_uri(self.original.url)
+
+    def resolve_mobile(self, info, **kwargs):
+        return info.context.build_absolute_uri(self.mobile.url)
     
 class VisitNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
