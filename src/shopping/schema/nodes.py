@@ -9,6 +9,7 @@ from ..models import (
     Subscription, 
     RecruitmentRequest, 
     Product, 
+    ProductPicture,
     Price, 
     Cart,
 )
@@ -89,6 +90,13 @@ class ProductNode(DjangoObjectType):
         model = Product
         filter_fields = ('id',)
         interfaces = (graphene.relay.Node,)
+
+class ProductPictureNode(DjangoObjectType):
+    class Meta:
+        model = ProductPicture
+    
+    def resolve_original(self, info, **kwargs):
+        return info.context.build_absolute_uri(self.original.url)
 
 class PriceNode(DjangoObjectType):
     pk = graphene.Int(source='pk')

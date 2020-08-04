@@ -20,12 +20,11 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        exclude = ('store', 'created', 'updated')
+        exclude = ('picture', 'store', 'created', 'updated')
 
 class UpdateProductForm(ProductForm):
     name = forms.CharField(required=False)
     description = forms.CharField(required=False)
-    picture = forms.ImageField(required=False)
 
 
 class PriceForm(forms.ModelForm):

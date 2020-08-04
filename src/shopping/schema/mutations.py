@@ -11,6 +11,7 @@ from ..models import (
     Subscription,
     RecruitmentRequest,
     Product,
+    ProductPicture,
     Price,
     Cart,
 )
@@ -239,7 +240,7 @@ class CreateProductMutation(graphene.relay.ClientIDMutation):
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, sotre_id=None, **kwargs):
+    def mutate_and_get_payload(self, info, sotre_id=None, picture=None, **kwargs):
         store = Store.objects.get(pk=store_id)
 
         is_owner = info.context.user == store.user
@@ -254,6 +255,9 @@ class CreateProductMutation(graphene.relay.ClientIDMutation):
 
         if not product_form.is_valid():
             return CreateProductMutation(product=None, success=False, errors=product_form.errors.get_json_data())
+        
+        if picture is not None:
+            product.picture = ProductPicture.objects.create(original=picture)
         
         product_form.save()
         return CreateProductMutation(product=product, success=True)
@@ -270,7 +274,7 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, id=None, **kwargs):
+    def mutate_and_get_payload(self, info, id=None, picture=None, **kwargs):
         product = Product.objects.get(pk=id)
 
         is_worker = info.context.user in product.store.workers.iterator()
@@ -284,6 +288,9 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
 
         if not update_product_form.is_valid():
             return UpdateProductMutation(success=False, errors=update_product_form.errors.get_json_data())
+        
+        if picture is not None:
+            product.picture.original = picture
         
         product = update_product_form.save(commit=False)
         product.save(update_fields=list(kwargs.keys()))

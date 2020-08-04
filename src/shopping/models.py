@@ -91,10 +91,19 @@ class RecruitmentRequest(models.Model):
     def __str__(self):
         return f'{self.user} @ {self.store}'
 
+class ProductPicture(models.Model):
+    original = ProcessedImageField(
+                    upload_to=build_product_picture_path,
+                    processors=[
+                        ResizeToFill(200, 200)
+                    ],
+                    format='JPEG'
+                )
+
 class Product(models.Model):
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=255)
-    picture = models.ImageField(upload_to='product-pictures')
+    picture = models.OneToOneField(ProductPicture, on_delete=models.CASCADE, null=True)
     store = models.ForeignKey(Store, related_name='products', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
