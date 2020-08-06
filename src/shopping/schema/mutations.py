@@ -79,7 +79,7 @@ class UpdateStoreMutation(graphene.relay.ClientIDMutation):
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, id=None, logo=None, cover=None **kwargs):
+    def mutate_and_get_payload(self, info, id=None, logo=None, cover=None, **kwargs):
         store = Store.objects.get(pk=id)
 
         is_owner = store.user == info.context.user
