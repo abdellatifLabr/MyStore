@@ -167,6 +167,7 @@ GRAPHENE = {
 # Graphql Auth
 GRAPHQL_AUTH = {
     'REGISTER_MUTATION_FIELDS': ['username', 'email', 'first_name', 'last_name'],
+    'UPDATE_MUTATION_FIELDS': ['username', 'email', 'first_name', 'last_name'],
     'ALLOW_LOGIN_NOT_VERIFIED': True,
     'ACTIVATION_PATH_ON_EMAIL': 'user/activate',
 }
