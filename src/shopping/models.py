@@ -38,7 +38,7 @@ class StoreLogo(models.Model):
 
 class StoreCover(models.Model):
     original = ProcessedImageField(
-                    upload_to=build_store_logo_path,
+                    upload_to=build_store_cover_path,
                     processors=[
                         ResizeToFill(820, 312)
                     ],
