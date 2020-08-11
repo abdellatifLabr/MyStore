@@ -143,6 +143,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Cors
 CORS_ORIGIN_ALLOW_ALL = True
@@ -167,9 +171,7 @@ GRAPHENE = {
 # Graphql Auth
 GRAPHQL_AUTH = {
     'REGISTER_MUTATION_FIELDS': ['username', 'email', 'first_name', 'last_name'],
-    'UPDATE_MUTATION_FIELDS': ['username', 'email', 'first_name', 'last_name'],
     'ALLOW_LOGIN_NOT_VERIFIED': True,
-    'ACTIVATION_PATH_ON_EMAIL': 'user/activate',
 }
 
 AUTHENTICATION_BACKENDS = [
