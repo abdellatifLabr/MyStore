@@ -72,7 +72,9 @@ class SubscriptionNode(DjangoObjectType):
     
     class Meta:
         model = Subscription
-        filter_fields = ('id', 'user')
+        filter_fields = {
+            'store__id': ['exact']
+        }
         interfaces = (graphene.relay.Node,)
 
 class RecruitmentRequestNode(DjangoObjectType):
