@@ -46,7 +46,7 @@ class Order(models.Model):
         return f'Order ({self.user})'
 
 class OrderItem(models.Model):
-    quantity = models.IntegerField(default=1)
+    quantity = models.IntegerField()
     product = models.OneToOneField(Product, related_name='orders', on_delete=models.CASCADE)
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
