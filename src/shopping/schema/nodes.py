@@ -116,7 +116,7 @@ class CartProductNode(DjangoObjectType):
     class Meta:
         model = CartProduct
         filter_fields = {
-            'product__id': ['exact']
+            'user__id': ['exact']
         }
         interfaces = (graphene.relay.Node,)
         
