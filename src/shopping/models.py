@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from djmoney.models.fields import MoneyField
+from djmoney.models.fields import CurrencyField
 from imagekit.models import ProcessedImageField, ImageSpecField
 from imagekit.processors import ResizeToFill
 
@@ -112,16 +112,17 @@ class Product(models.Model):
         return self.name
 
 class Price(models.Model):
-    value = MoneyField(max_digits=19, decimal_places=4, default_currency='USD')
+    value = models.FloatField()
+    currency = CurrencyField(default='USD', price_field='value')
     product = models.ForeignKey(Product, related_name='prices', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.value_currency}{str(self.value)}'
+        return f'{self.currency} {str(self.value)}'
 
-class Cart(models.Model):
-    user = models.ForeignKey(get_user_model(), related_name='carts', on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product, related_name='carts', blank=True)
+class CartProduct(models.Model):
+    user = models.ForeignKey(get_user_model(), related_name='cart_products', on_delete=models.CASCADE)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.user}\'s Cart'
+        return f'{self.product} - {self.user}'

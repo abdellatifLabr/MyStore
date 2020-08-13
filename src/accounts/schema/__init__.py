@@ -1,6 +1,8 @@
 import graphene
 from graphql_auth.schema import MeQuery, UserQuery
-from graphql_auth import mutations
+from graphql_auth import mutations as graphql_auth_mutations
+
+from .mutations import UpdateUserMutation
 
 class Query(
     MeQuery,
@@ -9,17 +11,18 @@ class Query(
 ): pass
 
 class Mutation(graphene.ObjectType):
-    register = mutations.Register.Field()
-    verify_account = mutations.VerifyAccount.Field()
-    resend_activation_email = mutations.ResendActivationEmail.Field()
-    send_password_reset_email = mutations.SendPasswordResetEmail.Field()
-    password_reset = mutations.PasswordReset.Field()
-    password_change = mutations.PasswordChange.Field()
-    update_account = mutations.UpdateAccount.Field()
-    delete_account = mutations.DeleteAccount.Field()
+    register = graphql_auth_mutations.Register.Field()
+    verify_account = graphql_auth_mutations.VerifyAccount.Field()
+    resend_activation_email = graphql_auth_mutations.ResendActivationEmail.Field()
+    send_password_reset_email = graphql_auth_mutations.SendPasswordResetEmail.Field()
+    password_reset = graphql_auth_mutations.PasswordReset.Field()
+    password_change = graphql_auth_mutations.PasswordChange.Field()
+    delete_account = graphql_auth_mutations.DeleteAccount.Field()
+
+    update_user = UpdateUserMutation.Field()
 
     # django-graphql-jwt
-    token_auth = mutations.ObtainJSONWebToken.Field()
-    verify_token = mutations.VerifyToken.Field()
-    refresh_token = mutations.RefreshToken.Field()
-    revoke_token = mutations.RevokeToken.Field()
+    token_auth = graphql_auth_mutations.ObtainJSONWebToken.Field()
+    verify_token = graphql_auth_mutations.VerifyToken.Field()
+    refresh_token = graphql_auth_mutations.RefreshToken.Field()
+    revoke_token = graphql_auth_mutations.RevokeToken.Field()

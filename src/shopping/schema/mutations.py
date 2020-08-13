@@ -13,7 +13,7 @@ from ..models import (
     Product,
     ProductPicture,
     Price,
-    Cart,
+    CartProduct,
 )
 
 from ..forms import (
@@ -32,7 +32,7 @@ from .nodes import (
     RecruitmentRequestNode,
     ProductNode,
     PriceNode,
-    CartNode,
+    CartProductNode,
 )
 
 class CreateStoreMutation(graphene.relay.ClientIDMutation):
@@ -398,7 +398,7 @@ class DeletePriceMutation(graphene.relay.ClientIDMutation):
         return DeletePriceMutation(success=True)
 
 
-class AddProductToCartMutation(graphene.relay.ClientIDMutation):
+class CreateCartProductMutation(graphene.relay.ClientIDMutation):
     class Input:
         product_id = graphene.ID(required=True)
     
@@ -406,13 +406,11 @@ class AddProductToCartMutation(graphene.relay.ClientIDMutation):
 
     @login_required
     def mutate_and_get_payload(self, info, product_id, **kwargs):
-        cart = Cart.objects.get(user=info.context.user)
         product = Product.objects.get(pk=product_id)
-        cart.products.add(product)
-        cart.save()
-        return AddProductToCartMutation(success=True)
+        cart_product = CartProduct.objects.create(user=info.context.user, product=product)
+        return CreateCartProductMutation(success=True)
 
-class RemoveProductFromCartMutation(graphene.relay.ClientIDMutation):
+class DeleteCartProductMutation(graphene.relay.ClientIDMutation):
     class Input:
         product_id = graphene.ID(required=True)
     
@@ -420,8 +418,7 @@ class RemoveProductFromCartMutation(graphene.relay.ClientIDMutation):
 
     @login_required
     def mutate_and_get_payload(self, info, product_id, **kwargs):
-        cart = Cart.objects.get(user=info.context.user)
         product = Product.objects.get(pk=product_id)
-        cart.products.remove(product)
-        cart.save()
-        return RemoveProductFromCartMutation(success=True)
+        cart_product = CartProduct.objects.get(user=info.context.user, product=product)
+        cart_product.delete()
+        return DeleteCartProductMutation(success=True)
