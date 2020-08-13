@@ -402,13 +402,14 @@ class CreateCartProductMutation(graphene.relay.ClientIDMutation):
     class Input:
         product_id = graphene.ID(required=True)
     
+    cart_product = graphene.Field(CartProductNode)
     success = graphene.Boolean()
 
     @login_required
     def mutate_and_get_payload(self, info, product_id, **kwargs):
         product = Product.objects.get(pk=product_id)
         cart_product = CartProduct.objects.create(user=info.context.user, product=product)
-        return CreateCartProductMutation(success=True)
+        return CreateCartProductMutation(success=True, cart_product=cart_product)
 
 class DeleteCartProductMutation(graphene.relay.ClientIDMutation):
     class Input:
