@@ -123,7 +123,7 @@ class Price(models.Model):
 class CartProduct(models.Model):
     user = models.ForeignKey(get_user_model(), related_name='cart_products', on_delete=models.CASCADE)
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
+    quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return f'{self.product} - {self.user}'
