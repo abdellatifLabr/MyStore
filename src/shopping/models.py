@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from django.contrib.auth import get_user_model
 from djmoney.models.fields import CurrencyField
 from imagekit.models import ProcessedImageField, ImageSpecField
@@ -113,9 +114,20 @@ class Product(models.Model):
     description = models.CharField(max_length=255)
     pictures = models.ManyToManyField(ProductPicture)
     price = models.OneToOneField(Price, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
     store = models.ForeignKey(Store, related_name='products', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def units_left(self):
+        in_cart_units = CartProduct.objects.filter(product_id=self.id)
+
+        if in_cart_units.count() == 0:
+            return self.quantity
+
+        in_cart_units_count = in_cart_units.aggregate(result=(self.quantity - Sum('quantity')))
+        return in_cart_units_count['result']
 
     def __str__(self):
         return self.name

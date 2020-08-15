@@ -87,6 +87,7 @@ class RecruitmentRequestNode(DjangoObjectType):
 
 class ProductNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    units_left = graphene.Int(source='units_left')
     
     class Meta:
         model = Product
