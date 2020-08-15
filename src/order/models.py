@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytz
 
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -28,7 +29,8 @@ class DiscountCode(models.Model):
 
     @property
     def expired(self):
-        return self.expiry < datetime.now()
+        utc = pytz.UTC
+        return self.expiry < utc.localize(datetime.now())
 
     def __str__(self):
         return self.code
