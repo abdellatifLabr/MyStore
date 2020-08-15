@@ -29,8 +29,11 @@ class AddressNode(DjangoObjectType):
 
 class DiscountCodeNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    expired = graphene.Boolean(source='expired')
 
     class Meta:
         model = DiscountCode
-        filter_fields = ('id',)
+        filter_fields = {
+            'code': ['exact']
+        }
         interfaces = (graphene.relay.Node,)
