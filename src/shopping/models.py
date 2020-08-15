@@ -95,30 +95,30 @@ class ProductPicture(models.Model):
     original = ProcessedImageField(
                     upload_to=build_product_picture_path,
                     processors=[
-                        ResizeToFill(200, 200)
+                        ResizeToFill(400, 400)
                     ],
                     format='JPEG'
                 )
 
+class Price(models.Model):
+    value = models.FloatField()
+    currency = CurrencyField(default='USD', price_field='value')
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.currency} {str(self.value)}'
+
 class Product(models.Model):
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=255)
-    picture = models.OneToOneField(ProductPicture, on_delete=models.CASCADE, null=True)
+    pictures = models.ManyToManyField(ProductPicture)
+    price = models.OneToOneField(Price, on_delete=models.CASCADE)
     store = models.ForeignKey(Store, related_name='products', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
-
-class Price(models.Model):
-    value = models.FloatField()
-    currency = CurrencyField(default='USD', price_field='value')
-    product = models.ForeignKey(Product, related_name='prices', on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.currency} {str(self.value)}'
 
 class CartProduct(models.Model):
     user = models.ForeignKey(get_user_model(), related_name='cart_products', on_delete=models.CASCADE)
