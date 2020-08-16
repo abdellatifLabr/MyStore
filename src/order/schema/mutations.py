@@ -194,7 +194,8 @@ class UpdateOrderMutation(graphene.relay.ClientIDMutation):
             return UpdateOrderMutation(success=False, errors=[Messages.NO_PERMISSION])
             
         for field, value in kwargs.items():
-            setattr(order, field, value)
+            if value is not None:
+                setattr(order, field, value)
         
         order.save()
         return CreateOrderMutation(order=order, success=True)
