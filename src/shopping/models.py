@@ -122,15 +122,19 @@ class Product(models.Model):
 
     @property
     def units_left(self):
+        units_left_count = self.quantity
+
         in_cart_units = CartProduct.objects.filter(product_id=self.id)
+        if in_cart_units.count() != 0:
+            in_cart_units_count = in_cart_units.aggregate(result=Sum('quantity'))
+            units_left_count -= in_cart_units_count['result']
+
         ordered_units = OrderItem.objects.filter(product_id=self.id)
+        if ordered_units.count() != 0:
+            ordered_units_count = ordered_units.aggregate(result=Sum('quantity'))
+            units_left_count -= ordered_units_count['result']
 
-        if in_cart_units.count() == 0 and ordered_units.count() == 0:
-            return self.quantity
-
-        in_cart_units_count = in_cart_units.aggregate(result=(self.quantity - Sum('quantity')))
-        ordered_units_count = ordered_units.aggregate(result=(self.quantity - Sum('quantity')))
-        return in_cart_units_count['result'] + ordered_units_count['result']
+        return units_left_count
 
     def __str__(self):
         return self.name
