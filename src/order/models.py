@@ -2,10 +2,10 @@ from datetime import datetime
 import pytz
 
 from django.db import models
+from django.db.models import Sum, F
 from django.contrib.auth import get_user_model
 from django_countries.fields import CountryField
 
-from shopping.models import Product, Store
 
 class Address(models.Model):
     country = CountryField()
@@ -23,7 +23,6 @@ class DiscountCode(models.Model):
     code = models.CharField(max_length=32)
     value = models.IntegerField()
     expiry = models.DateTimeField()
-    store = models.ForeignKey(Store, related_name='discount_codes', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -44,12 +43,23 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    @property
+    def total(self):
+        items = OrderItem.objects.filter(order_id=self.id)
+        items_total = items.aggregate(result=Sum(F('product__price__value') * F('quantity'), output_field=models.FloatField()))['result']
+
+        if (self.discount_code):
+            return items_total - (items_total * self.discount_code.value / 100)
+        
+        return items_total
+
+
     def __str__(self):
         return f'Order ({self.user})'
 
 class OrderItem(models.Model):
     quantity = models.IntegerField()
-    product = models.OneToOneField(Product, related_name='orders', on_delete=models.CASCADE)
+    product = models.OneToOneField('shopping.Product', related_name='orders', on_delete=models.CASCADE)
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
