@@ -5,6 +5,7 @@ from ..models import Order, OrderItem, Address, DiscountCode
 
 class OrderNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    total = graphene.Int(source='total')
 
     class Meta:
         model = Order

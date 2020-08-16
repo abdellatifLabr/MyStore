@@ -165,43 +165,24 @@ class DeleteDiscountCodeMutation(graphene.relay.ClientIDMutation):
 
 
 class CreateOrderMutation(graphene.relay.ClientIDMutation):
-    class Input:
-        shipping_address_id = graphene.ID(required=True) 
-        billing_address_id = graphene.ID(required=True)
-        discount_code_id = graphene.ID(required=True)
-    
     order = graphene.Field(OrderNode)
     success = graphene.Boolean()
 
     def mutate_and_get_payload(self, info, **kwargs):
-        shipping_address = Address.objects.get(pk=kwargs.get('shipping_address_id'))
-        billing_address = Address.objects.get(pk=kwargs.get('billing_address_id'))
-        discount_code_id = DiscountCode.objects.get(pk=kwargs.get('discount_code_id'))
-
-        is_owner = info.context.user == shipping_address.user and info.context.user == billing_address.user
-        has_permission = is_owner
-
-        if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
-            
-        order = Order.objects.create(
-            user=info.context.user,
-            shipping_address=shipping_address,
-            billing_address=billing_address,
-            discount_code=discount_code
-        )
+        order = Order.objects.create(user=info.context.user)
         return CreateOrderMutation(order=order, success=True)
 
 class UpdateOrderMutation(graphene.relay.ClientIDMutation):
     class Input:
         id = graphene.ID(required=True)
-        done = graphene.Boolean(default_value=False)
+        done = graphene.Boolean()
         shipping_address_id = graphene.ID() 
         billing_address_id = graphene.ID()
         discount_code_id = graphene.ID()
     
     order = graphene.Field(OrderNode)
     success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     def mutate_and_get_payload(self, info, id=None, **kwargs):
         order = Order.objects.get(pk=id)
@@ -257,8 +238,8 @@ class CreateOrderItemMutation(graphene.relay.ClientIDMutation):
         if not has_permission:
             return CreateOrderItemMutation(success=False, errors=[Messages.NO_PERMISSION])
 
-        order_item = OrderItem.objects.create(order=order, product=product, quantity=quantity)
-        return CreateOrderMutation(order_item=order_item, success=True)
+        order_item = OrderItem.objects.create(order=order, product=product, quantity=kwargs.get('quantity'))
+        return CreateOrderItemMutation(order_item=order_item, success=True)
 
 class UpdateOrderItemMutation(graphene.relay.ClientIDMutation):
     class Input:
