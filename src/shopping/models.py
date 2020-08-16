@@ -5,6 +5,7 @@ from djmoney.models.fields import CurrencyField
 from imagekit.models import ProcessedImageField, ImageSpecField
 from imagekit.processors import ResizeToFill
 
+from order.models import OrderItem
 from .utils import build_store_cover_path, build_store_logo_path, build_product_picture_path
 
 class StoreLogo(models.Model):
@@ -122,12 +123,14 @@ class Product(models.Model):
     @property
     def units_left(self):
         in_cart_units = CartProduct.objects.filter(product_id=self.id)
+        ordered_units = OrderItem.objects.filter(product_id=self.id)
 
-        if in_cart_units.count() == 0:
+        if in_cart_units.count() == 0 and ordered_units.count() == 0:
             return self.quantity
 
         in_cart_units_count = in_cart_units.aggregate(result=(self.quantity - Sum('quantity')))
-        return in_cart_units_count['result']
+        ordered_units_count = ordered_units.aggregate(result=(self.quantity - Sum('quantity')))
+        return in_cart_units_count['result'] + ordered_units_count['result']
 
     def __str__(self):
         return self.name
