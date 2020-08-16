@@ -14,6 +14,7 @@ class OrderNode(DjangoObjectType):
 
 class OrderItemNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    cost = graphene.Int(source='cost')
 
     class Meta:
         model = OrderItem

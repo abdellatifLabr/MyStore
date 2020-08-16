@@ -64,5 +64,9 @@ class OrderItem(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    @property
+    def cost(self):
+        return self.product.price.value * self.quantity
+
     def __str__(self):
         return f'{self.product} ({self.quantity})'
