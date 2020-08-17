@@ -23,6 +23,7 @@ class DiscountCode(models.Model):
     code = models.CharField(max_length=32)
     value = models.IntegerField()
     expiry = models.DateTimeField()
+    store = models.ForeignKey('shopping.Store', related_name='discount_codes', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -48,7 +49,7 @@ class Order(models.Model):
         items = OrderItem.objects.filter(order_id=self.id)
         items_total = items.aggregate(result=Sum(F('product__price__value') * F('quantity'), output_field=models.FloatField()))['result']
 
-        if (self.discount_code):
+        if self.discount_code:
             return items_total - (items_total * self.discount_code.value / 100)
         
         return items_total
