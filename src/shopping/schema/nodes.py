@@ -11,6 +11,7 @@ from ..models import (
     Product, 
     ProductPicture,
     Price, 
+    Cart,
     CartProduct,
 )
 from graphql_auth.schema import UserNode
@@ -111,13 +112,27 @@ class PriceNode(DjangoObjectType):
         filter_fields = ('id',)
         interfaces = (graphene.relay.Node,)
 
+class CartNode(DjangoObjectType):
+    pk = graphene.Int(source='pk')
+    total = graphene.Float(source='total')
+
+    class Meta:
+        model = Cart
+        filter_fields = {
+            'user__id': ['exact'],
+            'store__id': ['exact']
+        }
+        interfaces = (graphene.relay.Node,)
+
 class CartProductNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    cost = graphene.Float(source='cost')
 
     class Meta:
         model = CartProduct
         filter_fields = {
-            'user__id': ['exact']
+            'cart__id': ['exact'],
+            'cart__user__id': ['exact']
         }
         interfaces = (graphene.relay.Node,)
         

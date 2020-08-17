@@ -139,10 +139,27 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+class Cart(models.Model):
+    user = models.ForeignKey(get_user_model(), related_name='carts', on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, related_name='carts', on_delete=models.CASCADE)
+
+    @property
+    def total(self):
+        return self.cart_products.aggregate(
+            result=Sum(F('product__price__value') * F('quantity'), output_field=models.FloatField())
+        )['result']
+
+    def __str__(self):
+        return f'{user} - Cart'
+
 class CartProduct(models.Model):
-    user = models.ForeignKey(get_user_model(), related_name='cart_products', on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, related_name='cart_products', on_delete=models.CASCADE)
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
+    @property
+    def cost(self):
+        return self.product.price.value * self.quantity
+
     def __str__(self):
-        return f'{self.product} - {self.user}'
+        return f'{self.product} - {self.cart.user}'
