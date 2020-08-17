@@ -15,7 +15,6 @@ from ..models import (
     Product,
     ProductPicture,
     Price,
-    Cart,
     CartProduct,
 )
 
@@ -35,7 +34,6 @@ from .nodes import (
     RecruitmentRequestNode,
     ProductNode,
     PriceNode,
-    CartNode,
     CartProductNode,
 )
 
@@ -406,41 +404,6 @@ class DeletePriceMutation(graphene.relay.ClientIDMutation):
 
         price.delete()
         return DeletePriceMutation(success=True)
-
-
-class CreateCartMutation(graphene.relay.ClientIDMutation):
-    class Input:
-        store_id = graphene.ID(required=True)
-
-    cart = graphene.Field(CartNode)
-    success = graphene.Boolean()
-
-    @login_required
-    def mutate_and_get_payload(self, info, store_id=None, **kwargs):
-        cart = Cart.objects.create(user=info.context.user, store_id=store_id)
-        return CreateCartMutation(success=True, cart=cart)
-
-class DeleteCartMutation(graphene.relay.ClientIDMutation):
-    class Input:
-        id = graphene.ID(required=True)
-    
-    success = graphene.Boolean()
-    errors = graphene.Field(ExpectedErrorType)
-
-    @login_required
-    def mutate_and_get_payload(self, info, id, **kwargs):
-        cart = Cart.objects.get(pk=id)
-
-        is_owner = info.context.user == cart.user
-        is_store_owner = info.context.user == cart.store.user
-        is_store_worker = info.context.user in cart.store.workers.iterator()
-        has_permission = is_owner or is_store_owner or is_store_worker
-
-        if not has_permission:
-            return CreateCartMutation(success=False, errors=[Messages.NO_PERMISSION])
-
-        cart.delete()
-        return DeleteCartMutation(success=True)
 
 
 class CreateCartProductMutation(graphene.relay.ClientIDMutation):
