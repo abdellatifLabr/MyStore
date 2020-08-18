@@ -141,7 +141,6 @@ class Product(models.Model):
 
 class CartProduct(models.Model):
     user = models.ForeignKey(get_user_model(), related_name='cart_products', on_delete=models.CASCADE)
-    store = models.ForeignKey(Store, related_name='cart_products', on_delete=models.CASCADE)
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 

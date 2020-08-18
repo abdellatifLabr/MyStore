@@ -409,22 +409,13 @@ class DeletePriceMutation(graphene.relay.ClientIDMutation):
 class CreateCartProductMutation(graphene.relay.ClientIDMutation):
     class Input:
         product_id = graphene.ID(required=True)
-        cart_id = graphene.ID(required=True)
     
     cart_product = graphene.Field(CartProductNode)
     success = graphene.Boolean()
 
     @login_required
-    def mutate_and_get_payload(self, info, cart_id=None, **kwargs):
-        cart = Cart.objects.get(pk=cart_id)
-
-        is_owner = info.context.user == cart.user
-        has_permission = is_owner
-
-        if not has_permission:
-            return CreateCartProductMutation(success=False, errors=[Messages.NO_PERMISSION])
-
-        cart_product = CartProduct.objects.create(**kwargs)
+    def mutate_and_get_payload(self, info, product_id=None, **kwargs):
+        cart_product = CartProduct.objects.create(user=info.context.user, product_id=product_id)
         return CreateCartProductMutation(success=True, cart_product=cart_product)
 
 class UpdateCartProductMutation(graphene.relay.ClientIDMutation):
@@ -453,21 +444,12 @@ class UpdateCartProductMutation(graphene.relay.ClientIDMutation):
 
 class DeleteCartProductMutation(graphene.relay.ClientIDMutation):
     class Input:
-        pid = graphene.ID(required=True)
+        product_id = graphene.ID(required=True)
     
     success = graphene.Boolean()
 
     @login_required
-    def mutate_and_get_payload(self, info, id, **kwargs):
-        cart_product = CartProduct.objects.get(pk=id)
-
-        is_owner = info.context.user == cart_product.cart.user
-        is_store_owner = info.contetx.user == cart_product.cart.store.user
-        is_store_worker = info.context.user in cart_product.cart.store.workers.iterator()
-        has_permission = is_owner or is_store_owner or is_store_worker
-
-        if not has_permission:
-            return DeleteCartProductMutation(success=False, errors=[Messages.NO_PERMISSION])
-
+    def mutate_and_get_payload(self, info, product_id=None, **kwargs):
+        cart_product = CartProduct.objects.get(user=info.context.user, product_id=product_id)
         cart_product.delete()
         return DeleteCartProductMutation(success=True)
