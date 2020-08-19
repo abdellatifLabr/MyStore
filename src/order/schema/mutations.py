@@ -78,7 +78,7 @@ class DeleteAddressMutation(graphene.relay.ClientIDMutation):
             return DeleteAddressMutation(success=False, errors=[Messages.NO_PERMISSION])
             
         address.delete()
-        return DeleteAddressMutation(success=False)
+        return DeleteAddressMutation(success=True)
 
 
 class CreateDiscountCodeMutation(graphene.relay.ClientIDMutation):
