@@ -57,8 +57,11 @@ class UpdateAddressMutation(graphene.relay.ClientIDMutation):
         if not update_address_form.is_valid():
             return CreateAddressMutation(success=False, errors=update_address_form.errors.get_json_data())
         
-        address = update_address_form.save(commit=False)
-        address.save(update_fields=list(kwargs.keys()))
+        for field, value in kwargs.items():
+            if value is not None:
+                setattr(address, field, value)
+
+        address.save()
         return UpdateAddressMutation(address=address, success=True)
 
 class DeleteAddressMutation(graphene.relay.ClientIDMutation):
