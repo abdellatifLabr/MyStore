@@ -35,6 +35,7 @@ from .mutations import (
     CreateCartProductMutation,
     UpdateCartProductMutation,
     DeleteCartProductMutation,
+    DeleteAllCartProductsMutation,
 )
 
 class Query(
@@ -73,3 +74,4 @@ class Mutation(graphene.ObjectType):
     create_cart_product = CreateCartProductMutation.Field()
     update_cart_product = UpdateCartProductMutation.Field()
     delete_cart_product = DeleteCartProductMutation.Field()
+    delete_all_cart_products = DeleteAllCartProductsMutation.Field()

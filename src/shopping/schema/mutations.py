@@ -453,3 +453,18 @@ class DeleteCartProductMutation(graphene.relay.ClientIDMutation):
         cart_product = CartProduct.objects.get(user=info.context.user, product_id=product_id)
         cart_product.delete()
         return DeleteCartProductMutation(success=True)
+
+class DeleteAllCartProductsMutation(graphene.relay.ClientIDMutation):
+    class Input:
+        pass
+
+    success = graphene.Boolean()
+
+    @login_required
+    def mutate_and_get_payload(self, info, **kwargs):
+        cart_products = CartProduct.objects.filter(user=info.context.user)
+
+        for cart_product in cart_products:
+            cart_product.delete()
+        
+        return DeleteAllCartProductsMutation(success=True)
