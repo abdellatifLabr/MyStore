@@ -39,20 +39,20 @@ class Order(models.Model):
     done = models.BooleanField(default=False)
     shipping_address = models.OneToOneField(Address, related_name='shipping_orders', on_delete=models.SET_NULL, null=True, blank=True)
     billing_address = models.OneToOneField(Address, related_name='billing_orders', on_delete=models.SET_NULL, null=True, blank=True)
-    discount_code = models.OneToOneField(DiscountCode, related_name='orders', on_delete=models.SET_NULL, null=True, blank=True)
+    discount_codes = models.ManyToManyField(DiscountCode, related_name='orders')
     user = models.ForeignKey(get_user_model(), related_name='orders', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     @property
     def total(self):
+        total = 0
         items = OrderItem.objects.filter(order_id=self.id)
-        items_total = items.aggregate(result=Sum(F('product__price__value') * F('quantity'), output_field=models.FloatField()))['result']
-
-        if self.discount_code:
-            return items_total - (items_total * self.discount_code.value / 100)
         
-        return items_total
+        for item in items:
+            total += item.cost
+
+        return total
 
 
     def __str__(self):
@@ -67,7 +67,13 @@ class OrderItem(models.Model):
 
     @property
     def cost(self):
-        return self.product.price.value * self.quantity
+        cost = self.product.price.value * self.quantity
+
+        for discount_code in self.order.discount_codes.iterator():
+            if discount_code.store.id == self.product.store.id:
+                cost -= cost * discount_code.value / 100
+
+        return cost
 
     def __str__(self):
         return f'{self.product} ({self.quantity})'

@@ -184,7 +184,7 @@ class UpdateOrderMutation(graphene.relay.ClientIDMutation):
     success = graphene.Boolean()
     errors = graphene.Field(ExpectedErrorType)
 
-    def mutate_and_get_payload(self, info, id=None, **kwargs):
+    def mutate_and_get_payload(self, info, id=None, discount_code_id=None, **kwargs):
         order = Order.objects.get(pk=id)
 
         is_owner = info.context.user == order.user
@@ -196,6 +196,10 @@ class UpdateOrderMutation(graphene.relay.ClientIDMutation):
         for field, value in kwargs.items():
             if value is not None:
                 setattr(order, field, value)
+        
+        if discount_code_id is not None:
+            discount_code = DiscountCode.objects.get(pk=discount_code_id)
+            order.discount_codes.add(discount_code)
         
         order.save()
         return CreateOrderMutation(order=order, success=True)
