@@ -198,3 +198,7 @@ GRAPHQL_JWT = {
         'graphql_auth.mutations.RevokeToken',
     ],
 }
+
+# STRIPE
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY')
