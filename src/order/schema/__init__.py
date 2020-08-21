@@ -23,6 +23,8 @@ from .mutations import (
     CreateOrderItemMutation,
     UpdateOrderItemMutation,
     DeleteOrderItemMutation,
+
+    CompleteCheckoutMutation,
 )
 
 class Query(
@@ -49,3 +51,5 @@ class Mutation(graphene.ObjectType):
     create_order_item = CreateOrderItemMutation.Field()
     update_order_item = UpdateOrderItemMutation.Field()
     delete_order_item = DeleteOrderItemMutation.Field()
+
+    complete_checkout = CompleteCheckoutMutation.Field()

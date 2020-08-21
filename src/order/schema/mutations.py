@@ -1,12 +1,16 @@
 import graphene
 from graphql_jwt.decorators import login_required
 from graphql_auth.types import ExpectedErrorType
+from django.conf import settings
+import stripe
 
 from core.constants import Messages
 from ..models import Order, OrderItem, Address, DiscountCode
 from shopping.models import Store, Product
 from ..forms import AddressForm, UpdateAddressForm, DiscountCodeForm, UpdateDiscountCodeForm
 from .nodes import OrderNode, OrderItemNode, AddressNode, DiscountCodeNode
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 class CreateAddressMutation(graphene.relay.ClientIDMutation):
     class Input:
@@ -182,6 +186,7 @@ class UpdateOrderMutation(graphene.relay.ClientIDMutation):
         shipping_address_id = graphene.ID() 
         billing_address_id = graphene.ID()
         discount_code_id = graphene.ID()
+        stripe_payment_id = graphene.ID()
     
     order = graphene.Field(OrderNode)
     success = graphene.Boolean()
@@ -190,8 +195,9 @@ class UpdateOrderMutation(graphene.relay.ClientIDMutation):
     def mutate_and_get_payload(self, info, id=None, discount_code_id=None, **kwargs):
         order = Order.objects.get(pk=id)
 
+        is_order_done = order.done
         is_owner = info.context.user == order.user
-        has_permission = is_owner
+        has_permission = is_owner and not is_order_done
 
         if not has_permission:
             return UpdateOrderMutation(success=False, errors=[Messages.NO_PERMISSION])
@@ -291,3 +297,22 @@ class DeleteOrderItemMutation(graphene.relay.ClientIDMutation):
         return DeleteOrderItemMutation(success=True)
 
 
+class CompleteCheckoutMutation(graphene.relay.ClientIDMutation):
+    class Input:
+        order_id = graphene.ID(required=True)
+    
+    order = graphene.Field(OrderNode)
+    client_secret = graphene.String()
+    success = graphene.Boolean()
+
+    @login_required
+    def mutate_and_get_payload(self, info, order_id=None, **kwargs):
+        order = Order.objects.get(pk=order_id)
+
+        payment_intent = stripe.PaymentIntent.create(
+            amount=int(order.total) * 100,
+            currency=order.items.first().product.price.currency,
+            payment_method_types=['card']
+        )
+
+        return CompleteCheckoutMutation(success=True, client_secret=payment_intent.client_secret, order=order)

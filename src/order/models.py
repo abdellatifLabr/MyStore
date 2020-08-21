@@ -40,6 +40,7 @@ class Order(models.Model):
     shipping_address = models.OneToOneField(Address, related_name='shipping_orders', on_delete=models.SET_NULL, null=True, blank=True)
     billing_address = models.OneToOneField(Address, related_name='billing_orders', on_delete=models.SET_NULL, null=True, blank=True)
     discount_codes = models.ManyToManyField(DiscountCode, related_name='orders')
+    stripe_payment_id = models.CharField(max_length=32)
     user = models.ForeignKey(get_user_model(), related_name='orders', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
