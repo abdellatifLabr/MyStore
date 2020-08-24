@@ -43,6 +43,7 @@ class CartQuery(graphene.ObjectType):
     cart = graphene.relay.Node.Field(CartNode)
     carts = DjangoFilterConnectionField(CartNode)
 
+    @login_required
     def resolve_carts(self, info, **kwargs):
         return Cart.objects.filter(user=info.context.user)
 
