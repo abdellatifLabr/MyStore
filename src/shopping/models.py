@@ -1,7 +1,8 @@
 from django.db import models
 from django.db.models import Sum
 from django.contrib.auth import get_user_model
-from djmoney.models.fields import CurrencyField
+from djmoney.models.fields import MoneyField
+from djmoney.templatetags.djmoney import money_localize
 from imagekit.models import ProcessedImageField, ImageSpecField
 from imagekit.processors import ResizeToFill
 
@@ -61,6 +62,7 @@ class Store(models.Model):
     cover = models.OneToOneField(StoreCover, on_delete=models.CASCADE, null=True)
     closed = models.BooleanField(default=False)
     workers = models.ManyToManyField(get_user_model(), related_name='working_at_stores', blank=True)
+    shipping = MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
     user = models.ForeignKey(get_user_model(), related_name='owned_stores', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -103,12 +105,11 @@ class ProductPicture(models.Model):
                 )
 
 class Price(models.Model):
-    value = models.FloatField()
-    currency = CurrencyField(default='USD', price_field='value')
+    value = MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.currency} {str(self.value)}'
+        return str(self.value)
 
 class Product(models.Model):
     name = models.CharField(max_length=32)
@@ -139,14 +140,38 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+class Cart(models.Model):
+    user = models.ForeignKey(get_user_model(), related_name='carts', on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, related_name='carts', on_delete=models.CASCADE)
+
+    @property
+    def items_count(self):
+        return self.cart_products.aggregate(result=Sum('quantity'))['result']
+
+    @property
+    def total(self):
+        total = 0
+
+        for product in self.cart_products.iterator():
+            total += product.cost
+        
+        return total
+
+
 class CartProduct(models.Model):
+    cart = models.ForeignKey(Cart, related_name='cart_products', on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), related_name='cart_products', on_delete=models.CASCADE)
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     @property
     def cost(self):
         return self.product.price.value * self.quantity
 
     def __str__(self):
-        return f'{self.product} - {self.user}'
+        return f'{self.product} - {self.cart.user}'
+    
+    class Meta:
+        ordering = ['-created']

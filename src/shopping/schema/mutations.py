@@ -15,6 +15,7 @@ from ..models import (
     Product,
     ProductPicture,
     Price,
+    Cart,
     CartProduct,
 )
 
@@ -34,6 +35,7 @@ from .nodes import (
     RecruitmentRequestNode,
     ProductNode,
     PriceNode,
+    CartNode,
     CartProductNode,
 )
 
@@ -411,12 +413,16 @@ class CreateCartProductMutation(graphene.relay.ClientIDMutation):
         product_id = graphene.ID(required=True)
     
     cart_product = graphene.Field(CartProductNode)
+    cart = graphene.Field(CartNode)
+    is_new_cart = graphene.Boolean()
     success = graphene.Boolean()
 
     @login_required
     def mutate_and_get_payload(self, info, product_id=None, **kwargs):
-        cart_product = CartProduct.objects.create(user=info.context.user, product_id=product_id)
-        return CreateCartProductMutation(success=True, cart_product=cart_product)
+        product = Product.objects.get(pk=product_id)
+        cart, created = Cart.objects.get_or_create(user=info.context.user, store=product.store)
+        cart_product = CartProduct.objects.create(product_id=product_id, cart=cart, user=info.context.user)
+        return CreateCartProductMutation(success=True, cart_product=cart_product, is_new_cart=created, cart=cart)
 
 class UpdateCartProductMutation(graphene.relay.ClientIDMutation):
     class Input:
@@ -424,6 +430,7 @@ class UpdateCartProductMutation(graphene.relay.ClientIDMutation):
         quantity = graphene.Int()
     
     cart_product = graphene.Field(CartProductNode)
+    cart = graphene.Field(CartNode)
     success = graphene.Boolean() 
 
     @login_required
@@ -440,31 +447,52 @@ class UpdateCartProductMutation(graphene.relay.ClientIDMutation):
             setattr(cart_product, field, value)
         
         cart_product.save()
-        return UpdateCartProductMutation(success=True, cart_product=cart_product)
+        return UpdateCartProductMutation(success=True, cart_product=cart_product, cart=cart_product.cart)
 
 class DeleteCartProductMutation(graphene.relay.ClientIDMutation):
     class Input:
-        product_id = graphene.ID(required=True)
+        cart_product_id = graphene.ID(required=True)
     
+    cart = graphene.Field(CartNode)
+    is_last_item = graphene.Boolean()
     success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, product_id=None, **kwargs):
-        cart_product = CartProduct.objects.get(user=info.context.user, product_id=product_id)
+    def mutate_and_get_payload(self, info, cart_product_id=None, **kwargs):
+        cart_product = CartProduct.objects.get(pk=cart_product_id)
+
+        is_owner = info.context.user == cart_product.user
+        has_permission = is_owner
+
+        if not has_permission:
+            return DeleteCartProductMutation(success=False, errors=[Messages.NO_PERMISSION])
+
         cart_product.delete()
-        return DeleteCartProductMutation(success=True)
+
+        is_last_item = False
+        if cart_product.cart.cart_products.count() == 0:
+            cart_product.cart.delete()
+            is_last_item = True
+
+        return DeleteCartProductMutation(success=True, is_last_item=is_last_item, cart=cart_product.cart)
 
 class DeleteAllCartProductsMutation(graphene.relay.ClientIDMutation):
     class Input:
-        pass
+        cart_id = graphene.ID(required=True)
 
     success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, **kwargs):
-        cart_products = CartProduct.objects.filter(user=info.context.user)
+    def mutate_and_get_payload(self, info, cart_id=None, **kwargs):
+        cart = Cart.objects.get(pk=cart_id)
 
-        for cart_product in cart_products:
-            cart_product.delete()
+        is_owner = info.context.user == cart.user
+        has_permission = is_owner
+
+        if not has_permission:
+            return DeleteAllCartProductsMutation(success=False, errors=[Messages.NO_PERMISSION])
         
+        cart.delete()
         return DeleteAllCartProductsMutation(success=True)

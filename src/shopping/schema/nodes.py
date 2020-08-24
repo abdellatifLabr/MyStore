@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import graphene
 from graphene_django.types import DjangoObjectType
 
@@ -11,6 +13,7 @@ from ..models import (
     Product, 
     ProductPicture,
     Price,
+    Cart,
     CartProduct,
 )
 from graphql_auth.schema import UserNode
@@ -18,6 +21,7 @@ from graphql_auth.schema import UserNode
 class StoreNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
     workers = graphene.List(UserNode)
+    shipping = graphene.String(source='shipping')
 
     def resolve_workers(self, info, **kwargs):
         return self.workers.all()
@@ -105,22 +109,33 @@ class ProductPictureNode(DjangoObjectType):
 
 class PriceNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    value = graphene.String(source='value')
     
     class Meta:
         model = Price
         filter_fields = ('id',)
         interfaces = (graphene.relay.Node,)
 
+class CartNode(DjangoObjectType):
+    pk = graphene.Int(source='pk')
+    total = graphene.String(source='total')
+    items_count = graphene.Int(source='items_count')
+
+    class Meta:
+        model = Cart
+        filter_fields = {
+            'user__id': ['exact']
+        }
+        interfaces = (graphene.relay.Node,)
 
 class CartProductNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
-    cost = graphene.Float(source='cost')
+    cost = graphene.String(source='cost')
 
     class Meta:
         model = CartProduct
         filter_fields = {
-            'user__id': ['exact'],
-            'product__store__id': ['exact']
+            'cart__id': ['exact']
         }
         interfaces = (graphene.relay.Node,)
         

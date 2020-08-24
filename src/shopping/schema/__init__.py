@@ -7,6 +7,7 @@ from .queries import (
     RecruitmentRequestQuery,
     ProductQuery,
     PriceQuery,
+    CartQuery,
     CartProductQuery,
 )
 
@@ -45,6 +46,7 @@ class Query(
     RecruitmentRequestQuery,
     ProductQuery,
     PriceQuery,
+    CartQuery,
     CartProductQuery,
     graphene.ObjectType
 ): pass

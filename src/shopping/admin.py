@@ -10,6 +10,7 @@ from .models import (
     Product, 
     ProductPicture,
     Price, 
+    Cart,
     CartProduct,
 )
 
@@ -22,4 +23,5 @@ admin.site.register(RecruitmentRequest)
 admin.site.register(Product)
 admin.site.register(ProductPicture)
 admin.site.register(Price)
+admin.site.register(Cart)
 admin.site.register(CartProduct)
