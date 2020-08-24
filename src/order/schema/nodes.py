@@ -5,7 +5,7 @@ from ..models import Order, OrderItem, Address, DiscountCode
 
 class OrderNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
-    total = graphene.Int(source='total')
+    total = graphene.String(source='total')
 
     class Meta:
         model = Order
@@ -14,7 +14,7 @@ class OrderNode(DjangoObjectType):
 
 class OrderItemNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
-    cost = graphene.Int(source='cost')
+    cost = graphene.String(source='cost')
 
     class Meta:
         model = OrderItem

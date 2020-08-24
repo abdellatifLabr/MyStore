@@ -41,6 +41,7 @@ class Order(models.Model):
     billing_address = models.OneToOneField(Address, related_name='billing_orders', on_delete=models.SET_NULL, null=True, blank=True)
     discount_codes = models.ManyToManyField(DiscountCode, related_name='orders')
     stripe_payment_id = models.CharField(max_length=32)
+    store = models.ForeignKey('shopping.Store', related_name='orders', on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), related_name='orders', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -54,7 +55,6 @@ class Order(models.Model):
             total += item.cost
 
         return total
-
 
     def __str__(self):
         return f'Order ({self.user})'
@@ -75,6 +75,6 @@ class OrderItem(models.Model):
                 cost -= cost * discount_code.value / 100
 
         return cost
-
+    
     def __str__(self):
         return f'{self.product} ({self.quantity})'
