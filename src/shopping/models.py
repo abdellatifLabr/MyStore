@@ -145,10 +145,6 @@ class Cart(models.Model):
     store = models.ForeignKey(Store, related_name='carts', on_delete=models.CASCADE)
 
     @property
-    def items_count(self):
-        return self.cart_products.aggregate(result=Sum('quantity'))['result']
-
-    @property
     def total(self):
         total = 0
 

@@ -119,7 +119,6 @@ class PriceNode(DjangoObjectType):
 class CartNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
     total = graphene.String(source='total')
-    items_count = graphene.Int(source='items_count')
 
     class Meta:
         model = Cart
