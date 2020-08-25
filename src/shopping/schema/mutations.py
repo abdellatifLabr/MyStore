@@ -408,6 +408,22 @@ class DeletePriceMutation(graphene.relay.ClientIDMutation):
         return DeletePriceMutation(success=True)
 
 
+class DeleteCartMutation(graphene.relay.ClientIDMutation):
+    class Input:
+        cart_id = graphene.ID(required=True)
+    
+    cart = graphene.Field(CartNode)
+    success = graphene.Boolean()
+    
+    @login_required
+    def mutate_and_get_payload(self, info, **kwargs):
+        cart_id = kwargs.get('cart_id', None)
+
+        cart = Cart.objects.get(pk=cart_id)
+        cart.delete()
+        return DeleteCartMutation(success=True, cart=cart)
+
+
 class CreateCartProductMutation(graphene.relay.ClientIDMutation):
     class Input:
         product_id = graphene.ID(required=True)
@@ -476,23 +492,3 @@ class DeleteCartProductMutation(graphene.relay.ClientIDMutation):
             is_last_item = True
 
         return DeleteCartProductMutation(success=True, is_last_item=is_last_item, cart=cart_product.cart)
-
-class DeleteAllCartProductsMutation(graphene.relay.ClientIDMutation):
-    class Input:
-        cart_id = graphene.ID(required=True)
-
-    success = graphene.Boolean()
-    errors = graphene.Field(ExpectedErrorType)
-
-    @login_required
-    def mutate_and_get_payload(self, info, cart_id=None, **kwargs):
-        cart = Cart.objects.get(pk=cart_id)
-
-        is_owner = info.context.user == cart.user
-        has_permission = is_owner
-
-        if not has_permission:
-            return DeleteAllCartProductsMutation(success=False, errors=[Messages.NO_PERMISSION])
-        
-        cart.delete()
-        return DeleteAllCartProductsMutation(success=True)
