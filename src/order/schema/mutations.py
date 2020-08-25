@@ -6,7 +6,7 @@ import stripe
 
 from core.constants import Messages
 from ..models import Order, OrderItem, Address, DiscountCode
-from shopping.models import Store, Product
+from shopping.models import Store, Product, Cart
 from ..forms import AddressForm, UpdateAddressForm, DiscountCodeForm, UpdateDiscountCodeForm
 from .nodes import OrderNode, OrderItemNode, AddressNode, DiscountCodeNode
 
@@ -172,11 +172,21 @@ class DeleteDiscountCodeMutation(graphene.relay.ClientIDMutation):
 
 
 class CreateOrderMutation(graphene.relay.ClientIDMutation):
+    class Input:
+        cart_id = graphene.ID(required=True)
+
     order = graphene.Field(OrderNode)
     success = graphene.Boolean()
 
     def mutate_and_get_payload(self, info, **kwargs):
-        order = Order.objects.create(user=info.context.user)
+        cart_id = kwargs.get('cart_id', None)
+
+        cart = Cart.objects.get(pk=cart_id)
+        order = Order.objects.create(user=info.context.user, store=cart.store)
+
+        for cart_product in cart.cart_products.iterator():
+            order_item = OrderItem.objects.create(order=order, product=cart_product.product, quantity=cart_product.quantity)
+
         return CreateOrderMutation(order=order, success=True)
 
 class UpdateOrderMutation(graphene.relay.ClientIDMutation):
@@ -208,6 +218,10 @@ class UpdateOrderMutation(graphene.relay.ClientIDMutation):
         
         if discount_code_id is not None:
             discount_code = DiscountCode.objects.get(pk=discount_code_id)
+
+            if discount_code.store != order.store:
+                return UpdateOrderMutation(success=False, errors=[Messages.INVALID_DISCOUNT_CODE])
+
             order.discount_codes.add(discount_code)
         
         order.save()
@@ -304,14 +318,18 @@ class CompleteCheckoutMutation(graphene.relay.ClientIDMutation):
     order = graphene.Field(OrderNode)
     client_secret = graphene.String()
     success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     @login_required
     def mutate_and_get_payload(self, info, order_id=None, **kwargs):
         order = Order.objects.get(pk=order_id)
 
+        if order.billing_address is None:
+            return CompleteCheckoutMutation(success=False, errors=[Messages.MISSING_BILLING_ADDRESS])
+
         payment_intent = stripe.PaymentIntent.create(
-            amount=int(order.total) * 100,
-            currency=order.items.first().product.price.currency,
+            amount=int(order.total.amount * 100),
+            currency=order.items.first().product.price.value_currency,
             payment_method_types=['card']
         )
 

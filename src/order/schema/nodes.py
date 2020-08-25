@@ -36,6 +36,7 @@ class DiscountCodeNode(DjangoObjectType):
     class Meta:
         model = DiscountCode
         filter_fields = {
-            'code': ['exact']
+            'code': ['exact'],
+            'store__id': ['exact']
         }
         interfaces = (graphene.relay.Node,)
