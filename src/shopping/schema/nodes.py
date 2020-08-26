@@ -21,7 +21,11 @@ from graphql_auth.schema import UserNode
 class StoreNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
     workers = graphene.List(UserNode)
+    user = graphene.Field(UserNode)
     shipping = graphene.String(source='shipping')
+
+    def resolve_user(self, info, **kwargs):
+        return self.user
 
     def resolve_workers(self, info, **kwargs):
         return self.workers.all()
