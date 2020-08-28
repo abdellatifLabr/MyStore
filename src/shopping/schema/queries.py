@@ -2,7 +2,7 @@ import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_jwt.decorators import login_required
 
-from ..models import Cart, CartProduct
+from ..models import Cart, CartProduct, Store
 
 from .nodes import (
     StoreNode,
@@ -18,6 +18,11 @@ from .nodes import (
 class StoreQuery(graphene.ObjectType):
     store = graphene.relay.Node.Field(StoreNode)
     stores = DjangoFilterConnectionField(StoreNode)
+    my_stores = DjangoFilterConnectionField(StoreNode)
+
+    @login_required
+    def resolve_my_stores(self, info, **kwargs):
+        return Store.objects.filter(user=info.context.user)
 
 class VisitQuery(graphene.ObjectType):
     visit = graphene.relay.Node.Field(VisitNode)
