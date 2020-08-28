@@ -39,6 +39,8 @@ class StoreLogoNode(DjangoObjectType):
     thumbnail = graphene.String()
     desktop = graphene.String()
     mobile = graphene.String()
+    width = graphene.Int()
+    height = graphene.Int()
 
     class Meta:
         model = StoreLogo
@@ -54,9 +56,17 @@ class StoreLogoNode(DjangoObjectType):
     
     def resolve_mobile(self, info, **kwargs):
         return info.context.build_absolute_uri(self.mobile.url)
+    
+    def resolve_width(self, info, **kwargs):
+        return self.original.width
+    
+    def resolve_height(self, info, **kwargs):
+        return self.original.height
 
 class StoreCoverNode(DjangoObjectType):
     mobile = graphene.String()
+    width = graphene.Int()
+    height = graphene.Int()
 
     class Meta:
         model = StoreCover
@@ -66,6 +76,12 @@ class StoreCoverNode(DjangoObjectType):
 
     def resolve_mobile(self, info, **kwargs):
         return info.context.build_absolute_uri(self.mobile.url)
+    
+    def resolve_width(self, info, **kwargs):
+        return self.original.width
+    
+    def resolve_height(self, info, **kwargs):
+        return self.original.height
     
 class VisitNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
