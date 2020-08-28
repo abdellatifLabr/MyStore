@@ -2,6 +2,7 @@ import graphene
 from graphql_auth.types import ExpectedErrorType
 from graphql_jwt.decorators import login_required
 from graphene_file_upload.scalars import Upload
+from djmoney.money import Money
 
 from core.constants import Messages
 
@@ -46,13 +47,14 @@ class CreateStoreMutation(graphene.relay.ClientIDMutation):
         logo = Upload()
         cover = Upload()
         closed = graphene.Boolean(default_value=False)
+        shipping = graphene.Decimal(required=True)
     
     store = graphene.Field(StoreNode)
     success = graphene.Boolean()
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, logo=None, cover=None, **kwargs):
+    def mutate_and_get_payload(self, info, logo=None, cover=None, shipping=None, **kwargs):
         store = Store(user=info.context.user)
         store_form = StoreForm(kwargs, instance=store)
 
@@ -64,6 +66,9 @@ class CreateStoreMutation(graphene.relay.ClientIDMutation):
         
         if cover is not None:
             store.cover = StoreCover.objects.create(original=cover)
+        
+        if shipping is not None:
+            store.shipping = Money(shipping, 'USD')
 
         store_form.save()
         return CreateStoreMutation(store=store, success=True)    
@@ -76,6 +81,7 @@ class UpdateStoreMutation(graphene.relay.ClientIDMutation):
         logo = Upload()
         cover = Upload()
         workers = graphene.List(graphene.ID)
+        shipping = graphene.Decimal()
         closed = graphene.Boolean()
     
     store = graphene.Field(StoreNode)
@@ -83,7 +89,7 @@ class UpdateStoreMutation(graphene.relay.ClientIDMutation):
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, id=None, logo=None, cover=None, **kwargs):
+    def mutate_and_get_payload(self, info, id=None, logo=None, cover=None, shipping=None, **kwargs):
         store = Store.objects.get(pk=id)
 
         is_owner = store.user == info.context.user
@@ -102,12 +108,17 @@ class UpdateStoreMutation(graphene.relay.ClientIDMutation):
                 store.logo = StoreLogo.objects.create(original=logo)
             else:
                 store.logo.original = logo
+                store.logo.save()
         
         if cover is not None:
             if store.cover is None:
                 store.cover = StoreCover.objects.create(original=cover)
             else:
                 store.cover.original = cover
+                store.cover.save()
+            
+        if shipping is not None:
+            store.shipping = Money(shipping, 'USD')
 
         store = update_store_form.save(commit=False)
         store.save()
