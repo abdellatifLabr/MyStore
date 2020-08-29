@@ -61,12 +61,9 @@ class CreateStoreMutation(graphene.relay.ClientIDMutation):
         if not store_form.is_valid():
             return CreateStoreMutation(store=None, success=False, errors=store_form.errors.get_json_data())
 
-        if logo is not None:
-            store.logo = StoreLogo.objects.create(original=logo)
-        
-        if cover is not None:
-            store.cover = StoreCover.objects.create(original=cover)
-        
+        store.logo = StoreLogo.objects.create()
+        store.cover = StoreCover.objects.create()
+
         if shipping is not None:
             store.shipping = Money(shipping, 'USD')
 
