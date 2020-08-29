@@ -15,7 +15,8 @@ class StoreLogo(models.Model):
                     processors=[
                         ResizeToFill(180, 180)
                     ],
-                    format='JPEG'
+                    format='JPEG',
+                    default='img/store/logo/default.jpg'
                 )
 
     desktop = ImageSpecField(
@@ -45,7 +46,8 @@ class StoreCover(models.Model):
                     processors=[
                         ResizeToFill(820, 312)
                     ],
-                    format='JPEG'
+                    format='JPEG',
+                    default='img/store/cover/default.jpg'
                 )
 
     mobile = ImageSpecField(
