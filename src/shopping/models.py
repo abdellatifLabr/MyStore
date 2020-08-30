@@ -159,7 +159,7 @@ class Cart(models.Model):
 class CartProduct(models.Model):
     cart = models.ForeignKey(Cart, related_name='cart_products', on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), related_name='cart_products', on_delete=models.CASCADE)
-    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='cart_products', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
