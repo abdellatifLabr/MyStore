@@ -1,0 +1,49 @@
+[{
+  "model": "shopping.store",
+  "pk": 1,
+  "fields": {
+    "name": "Nike",
+    "description": "The biggest Nike store you will ever see in you fuckin life",
+    "logo": 2,
+    "cover": 2,
+    "closed": false,
+    "shipping_currency": "USD",
+    "shipping": "10.22",
+    "user": 7,
+    "created": "2020-08-22T13:13:19.678Z",
+    "updated": "2020-08-28T14:05:38.451Z",
+    "workers": []
+  }
+}, {
+  "model": "shopping.store",
+  "pk": 2,
+  "fields": {
+    "name": "Versace",
+    "description": "Check the mail with Versace",
+    "logo": 3,
+    "cover": 3,
+    "closed": false,
+    "shipping_currency": "USD",
+    "shipping": "10.00",
+    "user": 7,
+    "created": "2020-08-22T13:14:04.036Z",
+    "updated": "2020-08-22T13:14:04.036Z",
+    "workers": []
+  }
+}, {
+  "model": "shopping.store",
+  "pk": 7,
+  "fields": {
+    "name": "Reebok",
+    "description": "ufc sponsor",
+    "logo": 8,
+    "cover": 8,
+    "closed": false,
+    "shipping_currency": "USD",
+    "shipping": "20.00",
+    "user": 7,
+    "created": "2020-08-29T14:22:19.801Z",
+    "updated": "2020-08-29T14:23:25.656Z",
+    "workers": []
+  }
+}]

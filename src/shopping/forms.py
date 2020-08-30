@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from .models import Store, Visit, Subscription, Product, Price
+from .models import Store, Visit, Subscription, Product
 
 class StoreForm(forms.ModelForm):
     cover = forms.ImageField(required=False)
@@ -26,12 +26,3 @@ class ProductForm(forms.ModelForm):
 class UpdateProductForm(ProductForm):
     name = forms.CharField(required=False)
     description = forms.CharField(required=False)
-
-
-class PriceForm(forms.ModelForm):
-    class Meta:
-        model = Price
-        exclude = ('product', 'created')
-
-class UpdatePriceForm(PriceForm):
-    value = forms.CharField(required=False)

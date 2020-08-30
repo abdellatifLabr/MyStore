@@ -15,7 +15,6 @@ from ..models import (
     RecruitmentRequest,
     Product,
     ProductPicture,
-    Price,
     Cart,
     CartProduct,
 )
@@ -25,8 +24,6 @@ from ..forms import (
     UpdateStoreForm,
     ProductForm,
     UpdateProductForm,
-    PriceForm,
-    UpdatePriceForm,
 )
 
 from .nodes import (
@@ -35,7 +32,6 @@ from .nodes import (
     SubscriptionNode,
     RecruitmentRequestNode,
     ProductNode,
-    PriceNode,
     CartNode,
     CartProductNode,
 )
@@ -285,14 +281,15 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
         id = graphene.ID(required=True)
         name = graphene.String()
         description = graphene.String()
-        picture = Upload()
+        pictures = graphene.List(Upload)
+        price = graphene.Decimal()
     
     product = graphene.Field(ProductNode)
     success = graphene.Boolean()
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, id=None, picture=None, **kwargs):
+    def mutate_and_get_payload(self, info, id=None, pictures=None, price=None, **kwargs):
         product = Product.objects.get(pk=id)
 
         is_worker = info.context.user in product.store.workers.iterator()
@@ -307,11 +304,15 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
         if not update_product_form.is_valid():
             return UpdateProductMutation(success=False, errors=update_product_form.errors.get_json_data())
         
-        if picture is not None:
-            product.picture.original = picture
+        if pictures is not None:
+            for picture in pictures:
+                product.picture.original = picture
+        
+        if price is not None:
+            product.price = Money(price, 'USD')
         
         product = update_product_form.save(commit=False)
-        product.save(update_fields=list(kwargs.keys()))
+        product.save()
         return UpdateProductMutation(product=product, success=True)
         
 class DeleteProductMutation(graphene.relay.ClientIDMutation):
@@ -333,87 +334,6 @@ class DeleteProductMutation(graphene.relay.ClientIDMutation):
 
         product.delete()
         return DeleteProductMutation(success=True)
-
-
-class CreatePriceMutation(graphene.relay.ClientIDMutation):
-    class Input:
-        value = graphene.Float(required=True)
-        value_currency = graphene.String(required=True)
-        product_id = graphene.ID(required=True)
-    
-    price = graphene.Field(PriceNode)
-    success = graphene.Boolean()
-    errors = graphene.Field(ExpectedErrorType)
-
-    @login_required
-    def mutate_and_get_payload(self, info, product_id=None, **kwargs):
-        product = Product.objects.get(pk=product_id)
-
-        is_worker = info.context.user in product.store.workers.iterator()
-        is_owner = info.context.user == product.store.user
-        has_permission = is_owner or is_worker
-
-        if not has_permission:
-            return CreatePriceMutation(success=False, errors=[Messages.NO_PERMISSION])
-
-        price = Price()
-        price_form = PriceForm(kwargs, instance=price)
-
-        if not price_form.is_valid():
-            return CreatePriceMutation(success=False, errors=price_form.errors.get_json_data())
-
-        price_form.save()
-        return CreatePriceMutation(price=price, success=True)      
-
-class UpdatePriceMutation(graphene.relay.ClientIDMutation):
-    class Input:
-        id = graphene.ID(required=True)
-        value = graphene.Float()
-        value_currency = graphene.String()
-    
-    price = graphene.Field(PriceNode)
-    success = graphene.Boolean()
-    errors = graphene.Field(ExpectedErrorType)
-
-    @login_required
-    def mutate_and_get_payload(self, info, id=None, **kwargs):
-        price = Price.objects.get(pk=id)
-
-        is_worker = info.context.user in price.product.store.workers
-        is_owner = info.context.user == price.product.store.user
-        has_permission = is_owner or is_worker
-
-        if not has_permission:
-            return UpdatePriceMutation(success=False, errors=[Messages.NO_PERMISSION])
-
-        update_price_form = UpdatePriceForm(kwargs, instance=price)
-
-        if update_price_form.is_valid():
-            return UpdatePriceMutation(success=False, errors=update_price_form.errors.get_json_data())
-            
-        price = update_price_form.save(commit=False)
-        price.save(update_fields=list(kwargs.keys()))
-        return UpdatePriceMutation(price=price, success=True)     
-
-class DeletePriceMutation(graphene.relay.ClientIDMutation):
-    class Input:
-        id = graphene.ID(required=True)
-    
-    success = graphene.Boolean()
-
-    @login_required
-    def mutate_and_get_payload(self, info, id=None, **kwargs):
-        price = Price.objects.get(pk=id)
-
-        is_worker = info.context.user in price.product.store.workers
-        is_owner = info.context.user == price.product.store.user
-        has_permission = is_owner or is_worker
-
-        if not has_permission:
-            return DeletePriceMutation(success=False, errors=[Messages.NO_PERMISSION])
-
-        price.delete()
-        return DeletePriceMutation(success=True)
 
 
 class DeleteCartMutation(graphene.relay.ClientIDMutation):

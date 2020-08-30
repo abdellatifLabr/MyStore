@@ -106,37 +106,29 @@ class ProductPicture(models.Model):
                     format='JPEG'
                 )
 
-class Price(models.Model):
-    value = MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return str(self.value)
-
 class Product(models.Model):
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=255)
     pictures = models.ManyToManyField(ProductPicture)
-    price = models.OneToOneField(Price, on_delete=models.CASCADE)
+    price = MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
     quantity = models.PositiveIntegerField(default=1)
     store = models.ForeignKey(Store, related_name='products', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     @property
-    def units_left(self):
-        units_left_count = self.quantity
-
+    def in_carts_units(self):
         in_cart_units = CartProduct.objects.filter(product_id=self.id)
-        if in_cart_units.count() != 0:
-            in_cart_units_count = in_cart_units.aggregate(result=Sum('quantity'))
-            units_left_count -= in_cart_units_count['result']
-
+        return in_cart_units.aggregate(result=Sum('quantity'))['result']
+    
+    @property
+    def ordered_units(self):
         ordered_units = OrderItem.objects.filter(product_id=self.id)
-        if ordered_units.count() != 0:
-            ordered_units_count = ordered_units.aggregate(result=Sum('quantity'))
-            units_left_count -= ordered_units_count['result']
+        return ordered_units.aggregate(result=Sum('quantity'))['result']
 
+    @property
+    def units_left(self):
+        units_left_count = self.quantity - self.in_carts_units - self.ordered_units
         return units_left_count
 
     def __str__(self):

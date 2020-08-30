@@ -329,7 +329,7 @@ class CompleteCheckoutMutation(graphene.relay.ClientIDMutation):
 
         payment_intent = stripe.PaymentIntent.create(
             amount=int(order.total.amount * 100),
-            currency=order.items.first().product.price.value_currency,
+            currency=order.items.first().product.price_currency,
             payment_method_types=['card']
         )
 

@@ -1,0 +1,85 @@
+[{
+  "model": "shopping.product",
+  "pk": 1,
+  "fields": {
+    "name": "Shoes",
+    "description": "Don't trip with those",
+    "price_currency": "USD",
+    "price": "60.55",
+    "quantity": 100,
+    "store": 1,
+    "created": "2020-08-22T13:14:56.504Z",
+    "updated": "2020-08-22T13:14:56.504Z",
+    "pictures": [1]
+  }
+}, {
+  "model": "shopping.product",
+  "pk": 2,
+  "fields": {
+    "name": "Hoodie",
+    "description": "Boogie in da hoodie",
+    "price_currency": "USD",
+    "price": "50",
+    "quantity": 102,
+    "store": 1,
+    "created": "2020-08-22T13:15:50.980Z",
+    "updated": "2020-08-22T13:15:50.980Z",
+    "pictures": [2, 3, 4]
+  }
+}, {
+  "model": "shopping.product",
+  "pk": 3,
+  "fields": {
+    "name": "Hat",
+    "description": "The best one",
+    "price_currency": "USD",
+    "price": "35.6",
+    "quantity": 205,
+    "store": 1,
+    "created": "2020-08-22T13:16:40.583Z",
+    "updated": "2020-08-22T13:16:40.583Z",
+    "pictures": [5]
+  }
+}, {
+  "model": "shopping.product",
+  "pk": 4,
+  "fields": {
+    "name": "Pants",
+    "description": "Don't take shit in those pants",
+    "price_currency": "USD",
+    "price": "50",
+    "quantity": 93,
+    "store": 1,
+    "created": "2020-08-22T13:17:24.202Z",
+    "updated": "2020-08-22T13:17:24.202Z",
+    "pictures": [6]
+  }
+}, {
+  "model": "shopping.product",
+  "pk": 5,
+  "fields": {
+    "name": "Sprinting Shoes",
+    "description": "Run as fast as you can",
+    "price_currency": "USD",
+    "price": "66",
+    "quantity": 104,
+    "store": 2,
+    "created": "2020-08-22T13:18:04.290Z",
+    "updated": "2020-08-22T13:18:04.290Z",
+    "pictures": [7]
+  }
+}, {
+  "model": "shopping.product",
+  "pk": 6,
+  "fields": {
+    "name": "Boots",
+    "description": "These are not boots obviously",
+    "price_currency": "USD",
+    "price": "40",
+    "quantity": 100,
+    "store": 2,
+    "created": "2020-08-22T13:19:08.672Z",
+    "updated": "2020-08-22T13:19:08.672Z",
+    "pictures": [8]
+  }
+}]

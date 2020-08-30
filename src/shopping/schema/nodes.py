@@ -12,7 +12,6 @@ from ..models import (
     RecruitmentRequest, 
     Product, 
     ProductPicture,
-    Price,
     Cart,
     CartProduct,
 )
@@ -111,6 +110,7 @@ class RecruitmentRequestNode(DjangoObjectType):
 
 class ProductNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    price = graphene.String(source='price')
     units_left = graphene.Int(source='units_left')
     
     class Meta:
@@ -126,15 +126,6 @@ class ProductPictureNode(DjangoObjectType):
     
     def resolve_original(self, info, **kwargs):
         return info.context.build_absolute_uri(self.original.url)
-
-class PriceNode(DjangoObjectType):
-    pk = graphene.Int(source='pk')
-    value = graphene.String(source='value')
-    
-    class Meta:
-        model = Price
-        filter_fields = ('id',)
-        interfaces = (graphene.relay.Node,)
 
 class CartNode(DjangoObjectType):
     pk = graphene.Int(source='pk')

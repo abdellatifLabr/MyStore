@@ -68,7 +68,7 @@ class OrderItem(models.Model):
 
     @property
     def cost(self):
-        cost = self.product.price.value * self.quantity
+        cost = self.product.price * self.quantity
 
         for discount_code in self.order.discount_codes.iterator():
             if discount_code.store.id == self.product.store.id:
