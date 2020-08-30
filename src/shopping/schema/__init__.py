@@ -6,6 +6,7 @@ from .queries import (
     SubscriptionQuery,
     RecruitmentRequestQuery,
     ProductQuery,
+    ProductPictureQuery,
     CartQuery,
     CartProductQuery,
 )
@@ -41,6 +42,7 @@ class Query(
     SubscriptionQuery,
     RecruitmentRequestQuery,
     ProductQuery,
+    ProductPictureQuery,
     CartQuery,
     CartProductQuery,
     graphene.ObjectType

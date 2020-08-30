@@ -119,12 +119,12 @@ class Product(models.Model):
     @property
     def in_carts_units(self):
         in_cart_units = CartProduct.objects.filter(product_id=self.id)
-        return in_cart_units.aggregate(result=Sum('quantity'))['result']
+        return in_cart_units.aggregate(result=Sum('quantity'))['result'] or 0
     
     @property
     def ordered_units(self):
         ordered_units = OrderItem.objects.filter(product_id=self.id)
-        return ordered_units.aggregate(result=Sum('quantity'))['result']
+        return ordered_units.aggregate(result=Sum('quantity'))['result'] or 0
 
     @property
     def units_left(self):

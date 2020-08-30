@@ -10,6 +10,7 @@ from .nodes import (
     SubscriptionNode,
     RecruitmentRequestNode,
     ProductNode,
+    ProductPictureNode,
     CartNode,
     CartProductNode,
 )
@@ -38,6 +39,10 @@ class RecruitmentRequestQuery(graphene.ObjectType):
 class ProductQuery(graphene.ObjectType):
     product = graphene.relay.Node.Field(ProductNode)
     products = DjangoFilterConnectionField(ProductNode)
+
+class ProductPictureQuery(graphene.ObjectType):
+    product_picture = graphene.relay.Node.Field(ProductPictureNode)
+    product_pictures = DjangoFilterConnectionField(ProductPictureNode)
 
 class CartQuery(graphene.ObjectType):
     cart = graphene.relay.Node.Field(CartNode)

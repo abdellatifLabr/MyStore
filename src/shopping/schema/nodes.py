@@ -121,8 +121,14 @@ class ProductNode(DjangoObjectType):
         interfaces = (graphene.relay.Node,)
 
 class ProductPictureNode(DjangoObjectType):
+    pk = graphene.Int(source='pk')
+
     class Meta:
         model = ProductPicture
+        filter_fields = {
+            'product__id': ['exact']
+        }
+        interfaces = (graphene.relay.Node,)
     
     def resolve_original(self, info, **kwargs):
         return info.context.build_absolute_uri(self.original.url)
