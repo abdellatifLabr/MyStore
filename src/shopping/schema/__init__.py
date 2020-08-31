@@ -29,6 +29,10 @@ from .mutations import (
     UpdateProductMutation,
     DeleteProductMutation,
 
+    CreateProductPictureMutation,
+    UpdateProductPictureMutation,
+    DeleteProductPictureMutation,
+
     DeleteCartMutation,
 
     CreateCartProductMutation,
@@ -65,6 +69,10 @@ class Mutation(graphene.ObjectType):
     create_product = CreateProductMutation.Field()
     update_product = UpdateProductMutation.Field()
     delete_product = DeleteProductMutation.Field()
+
+    create_product_picture = CreateProductPictureMutation.Field()
+    update_product_picture = UpdateProductPictureMutation.Field()
+    delete_product_picture = DeleteProductPictureMutation.Field()
 
     delete_cart = DeleteCartMutation.Field()
 

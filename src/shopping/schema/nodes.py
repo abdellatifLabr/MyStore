@@ -122,6 +122,8 @@ class ProductNode(DjangoObjectType):
 
 class ProductPictureNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    width = graphene.Int()
+    height = graphene.Int()
 
     class Meta:
         model = ProductPicture
@@ -132,6 +134,12 @@ class ProductPictureNode(DjangoObjectType):
     
     def resolve_original(self, info, **kwargs):
         return info.context.build_absolute_uri(self.original.url)
+    
+    def resolve_width(self, info, **kwargs):
+        return self.original.width
+    
+    def resolve_height(self, info, **kwargs):
+        return self.original.height
 
 class CartNode(DjangoObjectType):
     pk = graphene.Int(source='pk')

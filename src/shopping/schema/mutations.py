@@ -32,6 +32,7 @@ from .nodes import (
     SubscriptionNode,
     RecruitmentRequestNode,
     ProductNode,
+    ProductPictureNode,
     CartNode,
     CartProductNode,
 )
@@ -283,6 +284,7 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
         description = graphene.String()
         pictures = graphene.List(Upload)
         price = graphene.Decimal()
+        quantity = graphene.Int()
     
     product = graphene.Field(ProductNode)
     success = graphene.Boolean()
@@ -334,6 +336,48 @@ class DeleteProductMutation(graphene.relay.ClientIDMutation):
 
         product.delete()
         return DeleteProductMutation(success=True)
+
+
+class CreateProductPictureMutation(graphene.relay.ClientIDMutation):
+    class Input:
+        product_id = graphene.ID(required=True)
+        picture = Upload(required=True)
+    
+    success = graphene.Boolean()
+    product_picture = graphene.Field(ProductPictureNode)
+
+    @login_required
+    def mutate_and_get_payload(self, info, product_id=None, picture=None, **kwargs):
+        product = Product.objects.get(pk=product_id)
+        product_picture = ProductPicture.objects.create(original=picture)
+        product.pictures.add(product_picture)
+        return CreateProductPictureMutation(success=True, product_picture=product_picture)
+    
+class UpdateProductPictureMutation(graphene.relay.ClientIDMutation):
+    class Input:
+        product_picture_id = graphene.ID(required=True)
+        picture = Upload(required=True)
+    
+    success = graphene.Boolean()
+    picture = graphene.Field(ProductPictureNode)
+
+    @login_required
+    def mutate_and_get_payload(self, info, product_picture_id=None, picture=None, **kwargs):
+        product_picture = ProductPicture.objects.get(pk=product_picture_id)
+        product_picture.original = picture
+        return UpdateProductPictureMutation(success=True, product_picture=product_picture)
+
+class DeleteProductPictureMutation(graphene.relay.ClientIDMutation):
+    class Input:
+        product_picture_id = graphene.ID(required=True)
+    
+    success = graphene.Boolean()
+
+    @login_required
+    def mutate_and_get_payload(self, info, product_picture_id=None, **kwargs):
+        product_picture = ProductPicture.objects.get(pk=product_picture_id)
+        product_picture.delete()
+        return DeleteProductPictureMutation(success=True)
 
 
 class DeleteCartMutation(graphene.relay.ClientIDMutation):
