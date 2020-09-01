@@ -242,8 +242,8 @@ class CreateProductMutation(graphene.relay.ClientIDMutation):
         name = graphene.String(required=True)
         description = graphene.String(required=True)
         pictures = graphene.List(Upload, required=True)
-        price_value = graphene.Int(required=True)
-        price_currency = graphene.String(required=True)
+        quantity = graphene.Int()
+        price = graphene.Decimal(required=True)
         store_id = graphene.ID(required=True)
     
     product = graphene.Field(ProductNode)
@@ -251,7 +251,7 @@ class CreateProductMutation(graphene.relay.ClientIDMutation):
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, store_id=None, price_value=None, price_currency=None, pictures=None, **kwargs):
+    def mutate_and_get_payload(self, info, store_id=None, price=None, pictures=None, **kwargs):
         store = Store.objects.get(pk=store_id)
 
         is_owner = info.context.user == store.user
@@ -267,14 +267,15 @@ class CreateProductMutation(graphene.relay.ClientIDMutation):
         if not product_form.is_valid():
             return CreateProductMutation(product=None, success=False, errors=product_form.errors.get_json_data())
         
+        if price is not None:
+            product.price = Money(price, 'USD')
+
+        product_form.save()
+        
         if pictures is not None:
             for picture in pictures:
                 product.pictures.add(ProductPicture.objects.create(original=picture))
         
-        price = Price.objects.create(value=price_value, currency=price_currency)
-        product.price = price
-
-        product_form.save()
         return CreateProductMutation(product=product, success=True)
 
 class UpdateProductMutation(graphene.relay.ClientIDMutation):
