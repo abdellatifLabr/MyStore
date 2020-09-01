@@ -323,12 +323,13 @@ class DeleteProductMutation(graphene.relay.ClientIDMutation):
         id = graphene.ID(required=True)
     
     success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     @login_required
     def mutate_and_get_payload(self, info, id=None, **kwargs):
         product = Product.objects.get(pk=id)
 
-        is_worker = info.context.user in product.store.workers
+        is_worker = info.context.user in product.store.workers.iterator()
         is_owner = info.context.user == product.store.user
         has_permission = is_owner or is_worker
 
