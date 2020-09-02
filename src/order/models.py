@@ -61,7 +61,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     quantity = models.IntegerField()
-    product = models.OneToOneField('shopping.Product', related_name='orders', on_delete=models.CASCADE)
+    product = models.ForeignKey('shopping.Product', related_name='orders', on_delete=models.CASCADE)
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

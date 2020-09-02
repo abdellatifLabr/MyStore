@@ -232,6 +232,7 @@ class DeleteOrderMutation(graphene.relay.ClientIDMutation):
         id = graphene.ID(required=True)
 
     success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     def mutate_and_get_payload(self, info, id=None, **kwargs):
         order = Order.objects.get(pk=id)
