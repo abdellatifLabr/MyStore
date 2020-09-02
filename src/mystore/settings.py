@@ -183,8 +183,8 @@ AUTHENTICATION_BACKENDS = [
 GRAPHQL_JWT = {
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
-    'JWT_EXPIRATION_DELTA': timedelta(minutes=30),
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(hours=1),
+    'JWT_EXPIRATION_DELTA': timedelta(hours=config('ACCESS_TOKEN_EXPIRATION', cast=float)),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(hours=config('REFRESH_TOKEN_EXPIRATION', cast=float)),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
     'JWT_ALLOW_ANY_CLASSES': [
         'graphql_auth.mutations.Register',
