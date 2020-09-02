@@ -158,7 +158,7 @@ class CartProduct(models.Model):
 
     @property
     def cost(self):
-        return self.product.price.value * self.quantity
+        return self.product.price * self.quantity
 
     def __str__(self):
         return f'{self.product} - {self.cart.user}'
