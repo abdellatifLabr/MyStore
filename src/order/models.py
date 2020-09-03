@@ -16,8 +16,12 @@ class Address(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    @property
+    def formatted(self):
+        return f'{self.street} {self.postal_code[0:2]}-{self.postal_code[2:]} {self.city}, {self.country}'
+
     def __str__(self):
-        return f'{self.city}, {self.country}. {self.street}'
+        return self.formatted
 
 class DiscountCode(models.Model):
     code = models.CharField(max_length=32)
