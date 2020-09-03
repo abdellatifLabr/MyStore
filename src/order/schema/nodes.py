@@ -23,6 +23,7 @@ class OrderItemNode(DjangoObjectType):
 
 class AddressNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    formatted = graphene.String(source='formatted')
 
     class Meta:
         model = Address
