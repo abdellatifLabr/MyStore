@@ -12,7 +12,8 @@ class Avatar(models.Model):
         processors=[
             ResizeToFill(180, 180)
         ],
-        format='JPEG'
+        format='JPEG',
+        default='img/profile/avatar/default.jpg'
     )
 
     desktop = ImageSpecField(

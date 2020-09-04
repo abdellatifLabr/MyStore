@@ -15,6 +15,8 @@ class AvatarNode(DjangoObjectType):
     thumbnail = graphene.String()
     desktop = graphene.String()
     mobile = graphene.String()
+    width = graphene.Int()
+    height = graphene.Int()
 
     class Meta:
         model = Avatar
@@ -30,4 +32,10 @@ class AvatarNode(DjangoObjectType):
     
     def resolve_mobile(self, info, **kwargs):
         return info.context.build_absolute_uri(self.mobile.url)
+    
+    def resolve_width(self, info, **kwargs):
+        return self.original.width
+    
+    def resolve_height(self, info, **kwargs):
+        return self.original.height
     

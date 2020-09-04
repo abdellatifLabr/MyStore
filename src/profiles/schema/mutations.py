@@ -23,11 +23,13 @@ class UpdateProfileMutation(graphene.relay.ClientIDMutation):
 
         if avatar is not None:
             profile.avatar.original = avatar
+            profile.avatar.save()
 
         profile_form = ProfileForm(kwargs, instance=profile)
 
         if not profile_form.is_valid():
             return UpdateProfileMutation(success=False, errors=profile_form.errors.get_json_data())
 
-        profile_form.save()
+        profile_form.save(commit=False)
+        profile.save()
         return UpdateProfileMutation(profile=profile, success=True)
