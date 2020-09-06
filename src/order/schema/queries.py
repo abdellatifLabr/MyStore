@@ -3,11 +3,16 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphql_jwt.decorators import login_required
 
 from .nodes import OrderNode, OrderItemNode, AddressNode, DiscountCodeNode
-from ..models import Address
+from ..models import Address, Order
 
 class OrderQuery(graphene.ObjectType):
     order = graphene.relay.Node.Field(OrderNode)
     orders = DjangoFilterConnectionField(OrderNode)
+    my_orders = DjangoFilterConnectionField(OrderNode)
+
+    @login_required
+    def resolve_my_orders(self, info, **kwargs):
+        return Order.objects.filter(user=info.context.user)
 
 class OrderItemQuery(graphene.ObjectType):
     order_item = graphene.relay.Node.Field(OrderItemNode)
