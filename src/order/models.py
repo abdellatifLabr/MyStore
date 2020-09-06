@@ -18,7 +18,7 @@ class Address(models.Model):
 
     @property
     def formatted(self):
-        return f'{self.street} {self.postal_code[0:2]}-{self.postal_code[2:]} {self.city}, {self.country}'
+        return f'{self.street} {self.postal_code[0:2]}-{self.postal_code[2:]} {self.city}, {self.country.name}'
 
     def __str__(self):
         return self.formatted
@@ -41,8 +41,8 @@ class DiscountCode(models.Model):
 
 class Order(models.Model):
     done = models.BooleanField(default=False)
-    shipping_address = models.OneToOneField(Address, related_name='shipping_orders', on_delete=models.SET_NULL, null=True, blank=True)
-    billing_address = models.OneToOneField(Address, related_name='billing_orders', on_delete=models.SET_NULL, null=True, blank=True)
+    shipping_address = models.ForeignKey(Address, related_name='shipping_orders', on_delete=models.SET_NULL, null=True)
+    billing_address = models.ForeignKey(Address, related_name='billing_orders', on_delete=models.SET_NULL, null=True)
     discount_codes = models.ManyToManyField(DiscountCode, related_name='orders')
     stripe_payment_id = models.CharField(max_length=32, null=True)
     store = models.ForeignKey('shopping.Store', related_name='orders', on_delete=models.CASCADE)
