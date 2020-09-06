@@ -116,7 +116,9 @@ class ProductNode(DjangoObjectType):
     class Meta:
         model = Product
         filter_fields = {
-            'store__id': ['exact']
+            'store__id': ['exact'],
+            'name': ['icontains'],
+            #'description': ['icontains']
         }
         interfaces = (graphene.relay.Node,)
 
