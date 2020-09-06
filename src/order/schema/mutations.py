@@ -186,6 +186,11 @@ class CreateOrderMutation(graphene.relay.ClientIDMutation):
 
         for cart_product in cart.cart_products.iterator():
             order_item = OrderItem.objects.create(order=order, product=cart_product.product, quantity=cart_product.quantity)
+        
+        addresses = Address.objects.filter(user=info.context.user)
+        if addresses:
+            order.billing_address = addresses.first()
+            order.save()
 
         return CreateOrderMutation(order=order, success=True)
 
