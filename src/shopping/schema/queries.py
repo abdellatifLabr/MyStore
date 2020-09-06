@@ -2,7 +2,7 @@ import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_jwt.decorators import login_required
 
-from ..models import Cart, CartProduct, Store
+from ..models import Cart, CartProduct, Store, Subscription
 
 from .nodes import (
     StoreNode,
@@ -31,6 +31,11 @@ class VisitQuery(graphene.ObjectType):
 class SubscriptionQuery(graphene.ObjectType):
     subscription = graphene.relay.Node.Field(SubscriptionNode)
     subscriptions = DjangoFilterConnectionField(SubscriptionNode)
+    my_subscriptions = DjangoFilterConnectionField(SubscriptionNode)
+
+    @login_required
+    def resolve_my_subscriptions(self, info, **kwargs):
+        return Subscription.objects.filter(user=info.context.user)
 
 class RecruitmentRequestQuery(graphene.ObjectType):
     recruitment_request = graphene.relay.Node.Field(RecruitmentRequestNode)
