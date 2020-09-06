@@ -22,6 +22,7 @@ class StoreNode(DjangoObjectType):
     workers = graphene.List(UserNode)
     user = graphene.Field(UserNode)
     shipping = graphene.String(source='shipping')
+    subscribers_count = graphene.Int(source='subscribers_count')
 
     def resolve_user(self, info, **kwargs):
         return self.user

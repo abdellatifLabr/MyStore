@@ -69,6 +69,10 @@ class Store(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    @property
+    def subscribers_count(self):
+        return Subscription.objects.filter(store_id=self.id).count()
+
     def __str__(self):
         return self.name
 
