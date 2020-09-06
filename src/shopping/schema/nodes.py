@@ -92,6 +92,10 @@ class VisitNode(DjangoObjectType):
 
 class SubscriptionNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
+    user = graphene.Field(UserNode)
+
+    def resolve_user(self, info, **kwargs):
+        return self.user
     
     class Meta:
         model = Subscription
