@@ -91,7 +91,7 @@ class DeleteAddressMutation(graphene.relay.ClientIDMutation):
 class CreateDiscountCodeMutation(graphene.relay.ClientIDMutation):
     class Input:
         code = graphene.String(required=True)
-        value = graphene.String(required=True)
+        value = graphene.Int(required=True)
         expiry = graphene.DateTime(required=True)
         store_id = graphene.ID(required=True)
     
@@ -100,7 +100,7 @@ class CreateDiscountCodeMutation(graphene.relay.ClientIDMutation):
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, **kwargs):
+    def mutate_and_get_payload(self, info, store_id=None, **kwargs):
         store = Store.objects.get(pk=store_id)
 
         is_owner = info.context.user == store.user
@@ -108,9 +108,9 @@ class CreateDiscountCodeMutation(graphene.relay.ClientIDMutation):
         has_permission = is_owner or is_worker
 
         if not has_permission:
-            raise PermissionError('You don\'t have the permission to perform this action')
+            return CreateDiscountCodeMutation(success=False, errors=[Messages.NO_PERMISSION])
         
-        discount_code = DiscountCode(user=info.context.user, store=store)
+        discount_code = DiscountCode(store=store)
         discount_code_form = DiscountCodeForm(kwargs, instance=discount_code)
 
         if not discount_code_form.is_valid():
@@ -155,6 +155,7 @@ class DeleteDiscountCodeMutation(graphene.relay.ClientIDMutation):
         id = graphene.ID(required=True)
     
     success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
 
     @login_required
     def mutate_and_get_payload(self, info, id=None, **kwargs):
@@ -168,7 +169,7 @@ class DeleteDiscountCodeMutation(graphene.relay.ClientIDMutation):
             return DeleteDiscountCodeMutation(success=False, errors=[Messages.NO_PERMISSION])
             
         discount_code.delete()
-        return DeleteDiscountCodeMutation(success=False)
+        return DeleteDiscountCodeMutation(success=True)
 
 
 class CreateOrderMutation(graphene.relay.ClientIDMutation):
