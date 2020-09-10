@@ -1,9 +1,10 @@
 import graphene
 
-from .queries import NotificationQuery
+from .queries import NotificationQuery, NotificationTypeQuery
 
 class Query(
     NotificationQuery,
+    NotificationTypeQuery,
     graphene.ObjectType
 ): pass
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Sum
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericRelation
 from djmoney.models.fields import MoneyField
 from djmoney.templatetags.djmoney import money_localize
 from imagekit.models import ProcessedImageField, ImageSpecField
@@ -66,6 +67,7 @@ class Store(models.Model):
     workers = models.ManyToManyField(get_user_model(), related_name='working_at_stores', blank=True)
     shipping = MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
     user = models.ForeignKey(get_user_model(), related_name='owned_stores', on_delete=models.CASCADE)
+    notification_sources = GenericRelation('notifications.NotificationSource', related_query_name='store')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
