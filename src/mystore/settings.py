@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'channels',
     'notifications',
     'imagekit',
+    'analytics',
 ]
 
 MIDDLEWARE = [
