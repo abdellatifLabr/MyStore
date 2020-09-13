@@ -2,6 +2,7 @@ from decimal import Decimal
 
 import graphene
 from graphene_django.types import DjangoObjectType
+from graphql_auth.schema import UserNode
 
 from ..models import (
     Store, 
@@ -15,7 +16,8 @@ from ..models import (
     Cart,
     CartProduct,
 )
-from graphql_auth.schema import UserNode
+
+from ..filters import ProductFilter
 
 class StoreNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
@@ -120,11 +122,7 @@ class ProductNode(DjangoObjectType):
     
     class Meta:
         model = Product
-        filter_fields = {
-            'store__id': ['exact'],
-            'name': ['icontains'],
-            #'description': ['icontains']
-        }
+        filterset_class = ProductFilter
         interfaces = (graphene.relay.Node,)
 
 class ProductPictureNode(DjangoObjectType):
