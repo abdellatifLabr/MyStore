@@ -6,6 +6,7 @@ from .queries import (
     SubscriptionQuery,
     RecruitmentRequestQuery,
     ProductQuery,
+    RatingQuery,
     ProductPictureQuery,
     CartQuery,
     CartProductQuery,
@@ -38,6 +39,8 @@ from .mutations import (
     CreateCartProductMutation,
     UpdateCartProductMutation,
     DeleteCartProductMutation,
+
+    CreateRatingMutation,
 )
 
 class Query(
@@ -46,6 +49,7 @@ class Query(
     SubscriptionQuery,
     RecruitmentRequestQuery,
     ProductQuery,
+    RatingQuery,
     ProductPictureQuery,
     CartQuery,
     CartProductQuery,
@@ -79,3 +83,5 @@ class Mutation(graphene.ObjectType):
     create_cart_product = CreateCartProductMutation.Field()
     update_cart_product = UpdateCartProductMutation.Field()
     delete_cart_product = DeleteCartProductMutation.Field()
+
+    create_rating_mutation = CreateRatingMutation.Field()

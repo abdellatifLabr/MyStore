@@ -8,6 +8,7 @@ from .models import (
     Subscription, 
     RecruitmentRequest, 
     Product, 
+    Rating,
     ProductPicture,
     Cart,
     CartProduct,
@@ -20,6 +21,7 @@ admin.site.register(Visit)
 admin.site.register(Subscription)
 admin.site.register(RecruitmentRequest)
 admin.site.register(Product)
+admin.site.register(Rating)
 admin.site.register(ProductPicture)
 admin.site.register(Cart)
 admin.site.register(CartProduct)

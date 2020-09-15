@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Avg
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
 from djmoney.models.fields import MoneyField
@@ -117,7 +117,7 @@ class Product(models.Model):
     description = models.CharField(max_length=255)
     pictures = models.ManyToManyField(ProductPicture)
     price = MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
-    quantity = models.PositiveIntegerField(default=1)
+    quantity = models.PositiveIntegerField(default=0)
     store = models.ForeignKey(Store, related_name='products', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -136,9 +136,26 @@ class Product(models.Model):
     def units_left(self):
         units_left_count = self.quantity - self.in_carts_units - self.ordered_units
         return units_left_count
+    
+    @property
+    def rating(self):
+        rating = self.ratings.aggregate(result=Avg('value')).get('result')
+        return round(rating, 1) if rating else 2.5
+    
+    @property
+    def ratings_count(self):
+        return self.ratings.count()
 
     def __str__(self):
         return self.name
+
+class Rating(models.Model):
+    value = models.FloatField(max_length=5, default=2.5)
+    user = models.ForeignKey(get_user_model(), related_name='ratings', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='ratings', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.product.name} ({self.value})'
 
 class Cart(models.Model):
     user = models.ForeignKey(get_user_model(), related_name='carts', on_delete=models.CASCADE)

@@ -12,6 +12,7 @@ from ..models import (
     Subscription, 
     RecruitmentRequest, 
     Product, 
+    Rating,
     ProductPicture,
     Cart,
     CartProduct,
@@ -119,10 +120,20 @@ class ProductNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
     price = graphene.String(source='price')
     units_left = graphene.Int(source='units_left')
+    rating = graphene.Float(source='rating')
+    ratings_count = graphene.Int(source='ratings_count')
     
     class Meta:
         model = Product
         filterset_class = ProductFilter
+        interfaces = (graphene.relay.Node,)
+
+class RatingNode(DjangoObjectType):
+    pk = graphene.Int(source='pk')
+
+    class Meta:
+        model = Rating
+        filter_fields = ('id',)
         interfaces = (graphene.relay.Node,)
 
 class ProductPictureNode(DjangoObjectType):

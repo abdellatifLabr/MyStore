@@ -26,3 +26,4 @@ class ProductForm(forms.ModelForm):
 class UpdateProductForm(ProductForm):
     name = forms.CharField(required=False)
     description = forms.CharField(required=False)
+    quantity = forms.IntegerField(required=False)

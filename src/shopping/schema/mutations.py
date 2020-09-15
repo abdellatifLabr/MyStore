@@ -14,6 +14,7 @@ from ..models import (
     Subscription,
     RecruitmentRequest,
     Product,
+    Rating,
     ProductPicture,
     Cart,
     CartProduct,
@@ -32,6 +33,7 @@ from .nodes import (
     SubscriptionNode,
     RecruitmentRequestNode,
     ProductNode,
+    RatingNode,
     ProductPictureNode,
     CartNode,
     CartProductNode,
@@ -286,13 +288,14 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
         pictures = graphene.List(Upload)
         price = graphene.Decimal()
         quantity = graphene.Int()
+        rating = graphene.Float()
     
     product = graphene.Field(ProductNode)
     success = graphene.Boolean()
     errors = graphene.Field(ExpectedErrorType)
 
     @login_required
-    def mutate_and_get_payload(self, info, id=None, pictures=None, price=None, **kwargs):
+    def mutate_and_get_payload(self, info, id=None, pictures=None, price=None, rating=None, **kwargs):
         product = Product.objects.get(pk=id)
 
         is_worker = info.context.user in product.store.workers.iterator()
@@ -302,7 +305,7 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
         if not has_permission:
             return UpdateProductMutation(success=False, errors=[Messages.NO_PERMISSION])
 
-        update_product_form = UpdateProductForm(kwargs, instance=product)
+        update_product_form = UpdateProductForm(kwargs)
 
         if not update_product_form.is_valid():
             return UpdateProductMutation(success=False, errors=update_product_form.errors.get_json_data())
@@ -314,7 +317,15 @@ class UpdateProductMutation(graphene.relay.ClientIDMutation):
         if price is not None:
             product.price = Money(price, 'USD')
         
-        product = update_product_form.save(commit=False)
+        if rating is not None:
+            _rating, created = Rating.objects.get_or_create(user=info.context.user, product_id=id)
+            _rating.value = rating
+            _rating.save()
+        
+        for field, value in kwargs.items():
+            if value:
+                setattr(product, field, value)
+
         product.save()
         return UpdateProductMutation(product=product, success=True)
         
@@ -338,6 +349,27 @@ class DeleteProductMutation(graphene.relay.ClientIDMutation):
 
         product.delete()
         return DeleteProductMutation(success=True)
+
+
+class CreateRatingMutation(graphene.relay.ClientIDMutation):
+    class Input:
+        product_id = graphene.ID(required=True)
+        value = graphene.Float(required=True)
+    
+    rating = graphene.Field(RatingNode)
+    success = graphene.Boolean()
+    errors = graphene.Field(ExpectedErrorType)
+
+    @login_required
+    def mutate_and_get_payload(self, info, **kwargs):
+        product_id = kwargs.get('product_id')
+        value = kwargs.get('value')
+
+        rating, created = Rating.objects.get_or_create(user=info.context.user, product_id=product_id)
+        rating.value = value
+        rating.save()
+
+        return CreateRatingMutation(rating=rating, success=True)
 
 
 class CreateProductPictureMutation(graphene.relay.ClientIDMutation):
