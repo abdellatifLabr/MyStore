@@ -21,6 +21,7 @@ channels = "*"
 channels-redis = "*"
 django-imagekit = "*"
 stripe = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
