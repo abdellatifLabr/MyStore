@@ -1,1 +1,1 @@
-web: gunicorn src.mystore.wsgi
+web: gunicorn --pythonpath src mystore.wsgi
