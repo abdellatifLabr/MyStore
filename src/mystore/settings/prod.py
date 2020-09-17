@@ -35,7 +35,7 @@ DATABASES = {
     'default': env.db(),
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
 EMAIL_HOST = env('MAILGUN_SMTP_SERVER')
 EMAIL_PORT = env('MAILGUN_SMTP_PORT')
 EMAIL_HOST_USER = env('MAILGUN_SMTP_LOGIN')

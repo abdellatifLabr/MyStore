@@ -24,6 +24,7 @@ stripe = "*"
 gunicorn = "*"
 whitenoise = "*"
 django-environ = "*"
+django-mailgun = "*"
 
 [requires]
 python_version = "3.7"
