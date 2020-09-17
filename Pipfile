@@ -24,7 +24,7 @@ stripe = "*"
 gunicorn = "*"
 whitenoise = "*"
 django-environ = "*"
-django-mailgun = "*"
+django-anymail = {extras = ["mailgun"],version = "*"}
 
 [requires]
 python_version = "3.7"

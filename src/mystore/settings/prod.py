@@ -35,10 +35,12 @@ DATABASES = {
     'default': env.db(),
 }
 
-MAILGUN_ACCESS_KEY = env('MAILGUN_API_KEY')
-MAILGUN_SERVER_NAME = env('MAILGUN_DOMAIN')
+ANYMAIL = {
+    'MAILGUN_API_KEY': env('MAILGUN_API_KEY'),
+    'MAILGUN_SENDER_DOMAIN': env('MAILGUN_DOMAIN'),
+}
 
-EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 EMAIL_HOST = env('MAILGUN_SMTP_SERVER')
 EMAIL_PORT = env('MAILGUN_SMTP_PORT')
 EMAIL_HOST_USER = env('MAILGUN_SMTP_LOGIN')

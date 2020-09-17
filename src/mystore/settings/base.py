@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'notifications',
     'imagekit',
     'analytics',
+    'anymail',
 ]
 
 MIDDLEWARE = [
