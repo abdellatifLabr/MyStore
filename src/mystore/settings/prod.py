@@ -6,7 +6,8 @@ env = environ.Env(
     DEBUG=(bool, False),
     SECURE_SSL_REDIRECT=(bool, True),
     ACCESS_TOKEN_EXPIRATION=(float, 2),
-    REFRESH_TOKEN_EXPIRATION=(float, 6)
+    REFRESH_TOKEN_EXPIRATION=(float, 6),
+    CORS_ALLOWED_ORIGINS=(list, []),
 )
 
 DEBUG = env('DEBUG')
