@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath src mystore.wsgi
+web: gunicorn --pythonpath src mystore.wsgi --preload --log-file -

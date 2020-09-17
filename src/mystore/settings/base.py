@@ -5,18 +5,6 @@ from datetime import timedelta
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '+h2l4baub7m(--@vfuxbi5^*-#_^z9c=8(!y4tb@^0o06az4vy'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
-
-ALLOWED_HOSTS = []
-
 SITE_ID = 1
 
 # Application definition
@@ -49,6 +37,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -79,32 +68,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mystore.wsgi.application'
 
 ASGI_APPLICATION = 'mystore.routing.application'
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [
-                (config('REDIS_URL')),
-            ],
-        },
-    },
-}
-
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASS'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
-    }
-}
 
 
 # Password validation
@@ -146,20 +109,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Cors
-CORS_ORIGIN_ALLOW_ALL = True
-
-# SMTP
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_PORT = config('EMAIL_PORT')
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
 
 # GRAPHENE
 GRAPHENE = {
@@ -179,27 +132,3 @@ AUTHENTICATION_BACKENDS = [
     'graphql_auth.backends.GraphQLAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
-# Graphql JWT
-GRAPHQL_JWT = {
-    'JWT_VERIFY_EXPIRATION': True,
-    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
-    'JWT_EXPIRATION_DELTA': timedelta(hours=config('ACCESS_TOKEN_EXPIRATION', cast=float)),
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(hours=config('REFRESH_TOKEN_EXPIRATION', cast=float)),
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-    'JWT_ALLOW_ANY_CLASSES': [
-        'graphql_auth.mutations.Register',
-        'graphql_auth.mutations.VerifyAccount',
-        'graphql_auth.mutations.ResendActivationEmail',
-        'graphql_auth.mutations.SendPasswordResetEmail',
-        'graphql_auth.mutations.PasswordReset',
-        'graphql_auth.mutations.ObtainJSONWebToken',
-        'graphql_auth.mutations.VerifyToken',
-        'graphql_auth.mutations.RefreshToken',
-        'graphql_auth.mutations.RevokeToken',
-    ],
-}
-
-# STRIPE
-STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
-STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY')
