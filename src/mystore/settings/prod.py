@@ -35,21 +35,6 @@ DATABASES = {
     'default': env.db(),
 }
 
-ANYMAIL = {
-    'MAILGUN_API_KEY': env('MAILGUN_API_KEY'),
-    'MAILGUN_SENDER_DOMAIN': env('MAILGUN_DOMAIN'),
-}
-
-EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
-EMAIL_HOST = env('MAILGUN_SMTP_SERVER')
-EMAIL_PORT = env('MAILGUN_SMTP_PORT')
-EMAIL_HOST_USER = env('MAILGUN_SMTP_LOGIN')
-EMAIL_HOST_PASSWORD = env('MAILGUN_SMTP_PASSWORD')
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-
-DEFAULT_FROM_EMAIL = 'mailgun@' + env('MAILGUN_DOMAIN')
-
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
 
@@ -70,4 +55,10 @@ GRAPHQL_JWT = {
         'graphql_auth.mutations.RefreshToken',
         'graphql_auth.mutations.RevokeToken',
     ],
+}
+
+GRAPHQL_AUTH = {
+    'REGISTER_MUTATION_FIELDS': ['username', 'email', 'first_name', 'last_name'],
+    'ALLOW_LOGIN_NOT_VERIFIED': True,
+    'SEND_ACTIVATION_EMAIL': False,
 }
