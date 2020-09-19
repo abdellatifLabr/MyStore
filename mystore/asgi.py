@@ -19,7 +19,7 @@ def validate_origin(origin):
     if settings.CORS_ORIGIN_ALLOW_ALL:
         return True
 
-    print(origin, settings.CORS_ALLOWED_ORIGINS, str(origin) in settings.CORS_ALLOWED_ORIGINS)
-    return str(origin) in settings.CORS_ALLOWED_ORIGINS
+    print(origin, settings.CORS_ALLOWED_ORIGINS, if str(origin) in settings.CORS_ALLOWED_ORIGINS)
+    return if str(origin) in settings.CORS_ALLOWED_ORIGINS
 
 application = asgi_cors(get_asgi_application(), callback=validate_origin)
