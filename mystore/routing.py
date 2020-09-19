@@ -12,6 +12,6 @@ application = ProtocolTypeRouter({
                 notifications.routing.websocket_urlpatterns
             )
         ),
-        settings.CORS_ALLOWED_ORIGINS or ['*']
+        settings.CORS_ALLOWED_ORIGINS or '*'
     ),
 })
