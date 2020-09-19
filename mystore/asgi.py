@@ -16,10 +16,11 @@ from django.core.asgi import get_asgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mystore.settings.dev')
 
 def validate_origin(origin):
+    origin = origin.decode('utf-8')
+    
     if settings.CORS_ORIGIN_ALLOW_ALL:
         return True
 
-    print(str(origin), settings.CORS_ALLOWED_ORIGINS, str(origin) in settings.CORS_ALLOWED_ORIGINS)
     return origin in settings.CORS_ALLOWED_ORIGINS
 
 application = asgi_cors(get_asgi_application(), callback=validate_origin)
