@@ -25,6 +25,7 @@ gunicorn = "*"
 whitenoise = "*"
 django-environ = "*"
 daphne = "*"
+asgi-cors = "*"
 
 [requires]
 python_version = "3.7"
