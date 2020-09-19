@@ -1,12 +1,17 @@
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.security.websocket import OriginValidator
+from django.conf import settings
 
 import notifications.routing
 
 application = ProtocolTypeRouter({
-    'websocket': AuthMiddlewareStack(
-        URLRouter(
-            notifications.routing.websocket_urlpatterns
-        )
+    'websocket': OriginValidator(
+        AuthMiddlewareStack(
+            URLRouter(
+                notifications.routing.websocket_urlpatterns
+            )
+        ),
+        settings.CORS_ALLOWED_ORIGINS or ['*']
     ),
 })
