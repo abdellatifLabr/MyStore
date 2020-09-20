@@ -18,7 +18,7 @@ from ..models import (
     CartProduct,
 )
 
-from ..filters import ProductFilter
+from ..filters import ProductFilter, StoreFilter
 
 class StoreNode(DjangoObjectType):
     pk = graphene.Int(source='pk')
@@ -35,7 +35,7 @@ class StoreNode(DjangoObjectType):
     
     class Meta:
         model = Store
-        filter_fields = ('id', 'user')
+        filterset_class = StoreFilter
         interfaces = (graphene.relay.Node,)
 
 class StoreLogoNode(DjangoObjectType):

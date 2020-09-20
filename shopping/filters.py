@@ -1,7 +1,7 @@
 import django_filters
 from django_filters import FilterSet, OrderingFilter, RangeFilter
 
-from .models import Product
+from .models import Product, Store
 
 class ProductFilter(FilterSet):
     order_by = OrderingFilter(
@@ -17,4 +17,19 @@ class ProductFilter(FilterSet):
         fields = {
             'name': ['iexact', 'icontains'],
             'store__id': ['exact'],
+        }
+
+class StoreFilter(FilterSet):
+    order_by = OrderingFilter(
+        fields=(
+            ('created', 'created')
+        )
+    )
+
+    class Meta:
+        model = Store
+        fields = {
+            'id': ['iexact'],
+            'name': ['iexact', 'icontains'],
+            'user__id': ['iexact']
         }
