@@ -6,12 +6,10 @@ from django.conf import settings
 import notifications.routing
 
 application = ProtocolTypeRouter({
-    'websocket': OriginValidator(
-        AuthMiddlewareStack(
+    'websocket': AuthMiddlewareStack(
             URLRouter(
                 notifications.routing.websocket_urlpatterns
             )
-        ),
-        ['*']
+        )
     ),
 })
