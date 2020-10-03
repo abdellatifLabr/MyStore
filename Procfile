@@ -1,2 +1,2 @@
 release: python manage.py migrate
-web: gunicorn mystore.wsgi:application --log-file -
+web: daphne mystore.asgi:application --port $PORT --bind 0.0.0.0
