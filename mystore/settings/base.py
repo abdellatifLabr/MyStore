@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'shopping',
     'order',
     'django_countries',
-    'channels',
     'notifications',
     'imagekit',
     'analytics',
@@ -67,8 +66,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mystore.wsgi.application'
-
-ASGI_APPLICATION = 'mystore.routing.application'
 
 
 # Password validation
